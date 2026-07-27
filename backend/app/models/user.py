@@ -89,3 +89,8 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan",
     )
+    event_registrations = relationship(
+        "EventRegistration",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )

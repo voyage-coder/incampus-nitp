@@ -85,3 +85,8 @@ class Club(Base):
         back_populates="club",
         cascade="all, delete-orphan",
     )
+    events = relationship(
+        "Event",
+        back_populates="club",
+        cascade="all, delete-orphan",
+    )
