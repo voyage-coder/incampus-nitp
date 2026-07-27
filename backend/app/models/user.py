@@ -8,6 +8,8 @@ from sqlalchemy.sql import func # CURRENT_TIMESTAMP - SQLA writes it as func.now
 
 from app.db.database import Base
 
+from sqlalchemy.orm import relationship
+
 # create user class - it inherits from Base
 class User(Base): 
     __tablename__ = "users"
@@ -49,10 +51,11 @@ class User(Base):
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=func.now()
+        onupdate=func.now(),
+        nullable=False,
     )
     role = Column(
-        String,
+        String(20),
         nullable=False,
         default="student"
     )
@@ -71,4 +74,18 @@ class User(Base):
         Boolean,
         default=False,
         nullable=False
+    )
+    # clubs = relationship(
+    #     "Club",
+    #     back_populates="head"
+    # )
+    memberships = relationship(
+        "Membership",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    applications = relationship(
+        "ClubApplication",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )

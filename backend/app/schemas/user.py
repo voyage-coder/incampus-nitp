@@ -6,6 +6,7 @@ from uuid import UUID
 from pydantic import ConfigDict
 from app.enums.role import UserRole
 from typing import Optional
+from pydantic import HttpUrl
 
 class UserCreate(BaseModel):
     full_name : str = Field(min_length=3, max_length=100)
@@ -23,7 +24,7 @@ class UserResponse(BaseModel):
     branch: str
     year: int
     model_config = ConfigDict(from_attributes=True)
-    role: str
+    role: UserRole
 # here password is missing - no hased password
 # UUID required bcz client needs it and db generates it
 # pydantic expects python dictionary but sqla returns an object
@@ -57,9 +58,9 @@ class UserProfileResponse(BaseModel):
     role: str
 
     bio: Optional[str] = None
-    github: Optional[str] = None
-    linkedin: Optional[str] = None
-    portfolio: Optional[str] = None
+    github: Optional[HttpUrl] = None
+    linkedin: Optional[HttpUrl] = None
+    portfolio: Optional[HttpUrl] = None
     profile_image: Optional[str] = None
 
     is_active: bool
@@ -69,11 +70,19 @@ class UserProfileResponse(BaseModel):
 
 # updating profile
 class UserUpdate(BaseModel):
-    full_name: Optional[str] = None
+    full_name: Optional[str] = Field(
+        default=None,
+        min_length=3,
+        max_length=100,
+    )
     branch: Optional[str] = None
-    year: Optional[int] = None
+    year: Optional[int] = Field(
+        default=None,
+        ge=1,
+        le=4,
+    )
     bio: Optional[str] = None
-    github: Optional[str] = None
-    linkedin: Optional[str] = None
-    portfolio: Optional[str] = None
+    github: Optional[HttpUrl] = None
+    linkedin: Optional[HttpUrl] = None
+    portfolio: Optional[HttpUrl] = None
     profile_image: Optional[str] = None

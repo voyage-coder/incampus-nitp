@@ -41,7 +41,8 @@ def register(
     # if email already exist retrun error in http format
     if existing_user:
         raise HTTPException(
-            status_code=400,
+            # status_code=400,
+            status.HTTP_409_CONFLICT,
             detail="Email already registered"
         )
     # if email doesn't exist -> register it as new user

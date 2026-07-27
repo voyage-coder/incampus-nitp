@@ -2,7 +2,6 @@ from enum import Enum # provides Enum class
 
 class UserRole(str, Enum):
     STUDENT = "student"
-    CLUB_HEAD = "club_head"
     ADMIN = "admin"
 
 # it inherit from str bcz we want enum values to bahave like normal strings

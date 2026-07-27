@@ -34,7 +34,7 @@ def update_my_profile(
         user_update=user_update,
     )
 
-@router.post(
+@router.put(
     "/me/profile-image",
     response_model=UserProfileResponse,
 )

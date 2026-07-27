@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api import root, users, auth, admin
+from app.api import root, users, auth, admin, club, recruitment_drive, club_application, membership
 from app.core.config import DATABASE_URL
 # from app.api.auth import router as auth_router
 # from app.api.admin import router as admin_router
@@ -23,3 +23,7 @@ app.include_router(root.router)
 app.include_router(auth.router)
 app.include_router(admin.router)
 app.include_router(users.router)
+app.include_router(club.router)
+app.include_router(recruitment_drive.router)
+app.include_router(club_application.router)
+app.include_router(membership.router)
