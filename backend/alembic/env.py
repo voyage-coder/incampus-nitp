@@ -13,6 +13,7 @@ from app.models.club_application import ClubApplication
 from app.models.recruitment_drive import RecruitmentDrive
 from app.models.event import Event
 from app.models.event_registration import EventRegistration
+from app.models.placement_experience import PlacementExperience
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

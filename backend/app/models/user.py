@@ -94,3 +94,8 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan",
     )
+    placement_experiences = relationship(
+        "PlacementExperience",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
