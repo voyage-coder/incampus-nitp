@@ -104,3 +104,8 @@ class User(Base):
         back_populates="seller",
         cascade="all, delete-orphan",
     )
+    lost_found_items = relationship(
+        "LostFoundItem",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
