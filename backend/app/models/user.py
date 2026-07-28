@@ -99,3 +99,8 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan",
     )
+    marketplace_items = relationship(
+        "MarketplaceItem",
+        back_populates="seller",
+        cascade="all, delete-orphan",
+    )

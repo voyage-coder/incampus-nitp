@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api import root, users, auth, admin, club, recruitment_drive, club_application, membership, event, event_registration, placement_experience
+from app.api import root, users, auth, admin, club, recruitment_drive, club_application, membership, event, event_registration, placement_experience, marketplace
 from app.core.config import DATABASE_URL
 # from app.api.auth import router as auth_router
 # from app.api.admin import router as admin_router
@@ -30,3 +30,4 @@ app.include_router(membership.router)
 app.include_router(event.router)
 app.include_router(event_registration.router)
 app.include_router(placement_experience.router)
+app.include_router(marketplace.router)

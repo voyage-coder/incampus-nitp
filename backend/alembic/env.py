@@ -14,6 +14,7 @@ from app.models.recruitment_drive import RecruitmentDrive
 from app.models.event import Event
 from app.models.event_registration import EventRegistration
 from app.models.placement_experience import PlacementExperience
+from app.models.marketplace_item import MarketplaceItem
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
