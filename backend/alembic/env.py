@@ -16,6 +16,7 @@ from app.models.event_registration import EventRegistration
 from app.models.placement_experience import PlacementExperience
 from app.models.marketplace_item import MarketplaceItem
 from app.models.lost_found_item import LostFoundItem
+from app.models.pyq import Pyq
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
