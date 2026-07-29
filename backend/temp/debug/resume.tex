@@ -1,0 +1,359 @@
+% ==========================================================================
+% NIT Patna Resume Template v2.1 -- Jinja2-templated version
+% Original Author: Pavan Kumar Dubasi
+% Converted for FastAPI resume generator using custom Jinja2 delimiters:
+%   variable tags open/close with double-parentheses (a variable name
+%   wrapped in two opening parens and two closing parens); block tags use
+%   paren-percent open/close (if/for statements, later closed by a
+%   matching end-tag using the same paren-percent style).
+%
+% ASSUMED DATA SHAPES (context passed by backend, see prompt for top-level
+% keys). The top-level keys are exact per your spec; the FIELD NAMES on
+% each list item below are my best-guess based on what the original LaTeX
+% needed. Please rename them in your Pydantic/ORM models (or adjust the
+% template) if they don't match your actual schema.
+%
+%   user:            full_name, email, phone, github, linkedin, portfolio
+%   resume:          headline
+%   current_education: institute_name, department      (TODO: confirm field
+%                        names -- used only for the two header lines that
+%                        had no explicit mapping in your list, "Your
+%                        Department" and the institute name row)
+%   educations[]:    degree, institute, score, year
+%   experiences[]:   company, company_url (optional), location, job_title,
+%                    start_date, end_date, bullets[]
+%   projects[]:      title, tools, start_date, end_date, url (optional),
+%                    bullets[]
+%   skill_groups:    dict of { category_name: [skill, skill, ...] }
+%   certifications[]: name, issuer_name, issuer_url (optional), date
+%   achievements[]:  title, url (optional)
+%   positions_of_responsibility[]: title, url (optional), organization, date
+%
+% LaTeX ESCAPING:
+%   All user-supplied text fields below are passed through a
+%   `|latex_escape` Jinja filter (TODO: implement/register this filter in
+%   your Jinja2 Environment -- it must escape at least & % _ # $ { } ~ ^ \
+%   for characters coming from user/DB content). Static template labels
+%   (e.g. "Education", "Programming Languages") are left as-is since they
+%   are not user data.
+% ==========================================================================
+
+\documentclass[a4paper,11pt]{article}
+
+% Package imports
+\usepackage{latexsym}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{ragged2e}
+\usepackage[empty]{fullpage}
+\usepackage{wrapfig}
+\usepackage{tabularx}
+\usepackage{titlesec}
+\usepackage{geometry}
+\usepackage{marvosym}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{cfr-lm}
+\usepackage[T1]{fontenc}
+\usepackage{fontawesome5}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+\usepackage{tabularx} % Required for tables that stretch to page width
+\usepackage{array} % Required for vertical centering in tables
+% Color definitions
+\definecolor{darkblue}{RGB}{0,0,139}
+
+% Page layout
+\geometry{left=1.4cm, top=0.8cm, right=1.2cm, bottom=1cm}
+\setlength{\multicolsep}{0pt} 
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\footskip}{4.08pt}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=darkblue,
+    filecolor=darkblue,
+    urlcolor=darkblue,
+}
+
+% Custom box settings
+\usepackage[most]{tcolorbox}
+\tcbset{
+    frame code={},
+    center title,
+    left=0pt,
+    right=0pt,
+    top=0pt,
+    bottom=0pt,
+    colback=gray!20,
+    colframe=white,
+    width=\dimexpr\textwidth\relax,
+    enlarge left by=-2mm,
+    boxsep=4pt,
+    arc=0pt,outer arc=0pt,
+}
+
+% URL style
+\urlstyle{same}
+
+% Text alignment
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Section formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-7pt}]
+
+% Custom commands
+\newcommand{\resumeItem}[2]{
+  \item{
+    \textbf{#1}{\hspace{0.5mm}#2 \vspace{-0.5mm}}
+  }
+}
+
+\newcommand{\resumePOR}[3]{
+\vspace{0.5mm}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+        \textbf{#1}\hspace{0.3mm}#2 & \textit{\small{#3}} 
+    \end{tabular*}
+    \vspace{-2mm}
+}
+
+\newcommand{\resumeSubheading}[4]{
+\vspace{0.5mm}\item
+    \begin{tabular*}{0.98\textwidth}[t]{l@{\extracolsep{\fill}}r}
+        \textbf{#1} & \textit{\footnotesize{#4}} \\
+        \textit{\footnotesize{#3}} &  \footnotesize{#2}\\
+    \end{tabular*}
+    \vspace{-2.4mm}
+}
+
+\newcommand{\resumeProject}[4]{
+\vspace{0.5mm}\item
+    \begin{tabular*}{0.98\textwidth}[t]{l@{\extracolsep{\fill}}r}
+        \textbf{#1} & \textit{\footnotesize{#3}} \\
+        \footnotesize{\textit{#2}} & \footnotesize{#4}
+    \end{tabular*}
+    \vspace{-2.4mm}
+}
+
+\newcommand{\resumeSubItem}[2]{\resumeItem{#1}{#2}\vspace{-4pt}}
+
+\renewcommand{\labelitemi}{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand{\labelitemii}{$\vcenter{\hbox{\tiny$\circ$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*,labelsep=1mm]}
+\newcommand{\resumeHeadingSkillStart}{\begin{itemize}[leftmargin=*,itemsep=1.7mm, rightmargin=2ex]}
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=*,labelsep=1mm,itemsep=0.5mm]}
+
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}\vspace{2mm}}
+\newcommand{\resumeHeadingSkillEnd}{\end{itemize}\vspace{-2mm}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-2mm}}
+\newcommand{\cvsection}[1]{%
+\vspace{2mm}
+\begin{tcolorbox}
+    \textbf{\large #1}
+\end{tcolorbox}
+    \vspace{-4mm}
+}
+
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}%
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}%
+\newcolumntype{C}{>{\centering\arraybackslash}X}%
+
+% Commands for icon sizing and positioning
+\newcommand{\socialicon}[1]{\raisebox{-0.05em}{\resizebox{!}{1em}{#1}}}
+\newcommand{\ieeeicon}[1]{\raisebox{-0.3em}{\resizebox{!}{1.3em}{#1}}}
+
+% Font options
+\newcommand{\headerfonti}{\fontfamily{phv}\selectfont} % Helvetica-like (similar to Arial/Calibri)
+\newcommand{\headerfontii}{\fontfamily{ptm}\selectfont} % Times-like (similar to Times New Roman)
+\newcommand{\headerfontiii}{\fontfamily{ppl}\selectfont} % Palatino (elegant serif)
+\newcommand{\headerfontiv}{\fontfamily{pbk}\selectfont} % Bookman (readable serif)
+\newcommand{\headerfontv}{\fontfamily{pag}\selectfont} % Avant Garde-like (similar to Trebuchet MS)
+\newcommand{\headerfontvi}{\fontfamily{cmss}\selectfont} % Computer Modern Sans Serif
+\newcommand{\headerfontvii}{\fontfamily{qhv}\selectfont} % Quasi-Helvetica (another Arial/Calibri alternative)
+\newcommand{\headerfontviii}{\fontfamily{qpl}\selectfont} % Quasi-Palatino (another elegant serif option)
+\newcommand{\headerfontix}{\fontfamily{qtm}\selectfont} % Quasi-Times (another Times New Roman alternative)
+\newcommand{\headerfontx}{\fontfamily{bch}\selectfont} % Charter (clean serif font)
+
+\begin{document}
+\fontfamily{cmr}\selectfont
+
+%----------HEADING-----------------
+\parbox{2.35cm}{%
+\includegraphics[width=2cm,clip]{logo.png}
+}
+\parbox{\dimexpr\linewidth-2.8cm\relax}{
+\begin{tabularx}{\linewidth}{L r}
+  \textbf{\LARGE Priya} &  \\
+  Computer Science Undergraduate | Full Stack Developer | AI \& ML Enthusiast & \href{mailto:priya@example.com}{priya@example.com} \\
+  % TODO: no backend field mapped for "Department" line
+   &  \\
+  % TODO: no backend field mapped for institute name line
+  
+  &  \\
+\end{tabularx}
+}
+\vspace{-2mm}
+
+
+
+\section{\textbf{Education}}
+\vspace{1mm}
+\setlength{\tabcolsep}{5pt}
+
+\begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}X|>{\centering\arraybackslash}p{8cm}|>{\centering\arraybackslash}p{3cm}|>{\centering\arraybackslash}p{2.5cm}|}
+  \hline
+  \textbf{Degree/Certificate} & \textbf{Institute/Board} & \textbf{CGPA/Percentage} & \textbf{Year} \\
+  \hline
+  
+  Bachelor of Technology & National Institute of Technology Patna & 8.50 & 2028 \\ 
+  \hline
+  
+  Intermediate & Narayana Junior College & 97.20 & 2024 \\ 
+  \hline
+  
+  Secondary School & Sri Chaitanya High School & 98.50 & 2022 \\ 
+  \hline
+  
+\end{tabularx}
+
+\vspace{-4mm}
+
+
+\section{\textbf{Experience}}
+\vspace{-0.4mm}
+\resumeSubHeadingListStart
+
+\resumeSubheading
+    {ABC Technologies}{Remote}
+    {Software Engineering Intern}{2026-05-01 - 2026-07-31}
+    
+    \resumeItemListStart
+      
+      \item Developed REST APIs using FastAPI.
+      
+      \item Optimized SQL queries for improved performance.
+      
+      \item Collaborated using Git and GitHub.
+      
+    \resumeItemListEnd
+    
+
+\resumeSubHeadingListEnd
+\vspace{-6mm}
+
+
+
+\section{\textbf{Projects}}
+\vspace{-0.4mm}
+\resumeSubHeadingListStart
+
+
+\resumeProject
+    {InCampus NITP}
+    {FastAPI, PostgreSQL, SQLAlchemy, React, Tailwind CSS, JWT}
+    {2026-07-01}
+    {{}[\href{https://github.com/navyasree/incampus-nitp}{\textcolor{darkblue}{\faGithub}}]}
+
+\resumeItemListStart
+    
+    \item Developed a full-stack student portal for NIT Patna.
+    
+    \item Implemented JWT authentication and role-based access control.
+    
+    \item Built REST APIs using FastAPI and PostgreSQL.
+    
+\resumeItemListEnd
+
+
+\resumeProject
+    {AI Resume Builder}
+    {FastAPI, PostgreSQL, SQLAlchemy, React, Tailwind CSS, Jinja2}
+    {2026-06-15 - 2026-07-20}
+    {{}[\href{https://github.com/navyasree/ai-resume-builder}{\textcolor{darkblue}{\faGithub}}]}
+
+\resumeItemListStart
+    
+    \item Developed an ATS-friendly resume builder.
+    
+    \item Implemented CRUD operations for resume sections.
+    
+    \item Generated professional PDF resumes.
+    
+\resumeItemListEnd
+
+
+\resumeSubHeadingListEnd
+\vspace{-8mm}
+
+
+
+\section{\textbf{Skills}}
+\vspace{-0.4mm}
+\resumeHeadingSkillStart
+
+\resumeSubItem{PROGRAMMING\_LANGUAGE}{: Python, C++, JavaScript}
+
+\resumeSubItem{FRAMEWORK}{: FastAPI, React, Tailwind CSS}
+
+\resumeSubItem{DATABASE}{: PostgreSQL}
+
+\resumeSubItem{TOOL}{: Git, Docker}
+
+\resumeSubItem{CLOUD}{: Firebase}
+
+\resumeSubItem{OTHER}{: Machine Learning}
+
+\resumeHeadingSkillEnd
+\vspace{-2mm}
+
+
+
+\section{\textbf{Certifications}}
+\vspace{-0.4mm}
+\resumeSubHeadingListStart
+
+\resumePOR
+    {AWS Certified AI Practitioner} % Certification Name
+    {, \href{https://www.credly.com/badges/sample-aws-ai-practitioner}{Amazon Web Services}} % Issuer
+    {2026-06-15} % Duration
+
+\resumePOR
+    {Google Cloud Skills Boost} % Certification Name
+    {, \href{https://www.cloudskillsboost.google/public_profiles/sample}{Google Cloud}} % Issuer
+    {2026-05-20} % Duration
+
+\resumeSubHeadingListEnd
+
+\vspace{-6mm}
+
+
+%-----------ACHIEVEMENTS-----------------
+
+\section{\textbf{Achievements}}
+\vspace{-0.2mm}
+\resumeSubHeadingListStart
+
+\resumePOR{}{\href{https://leetcode.com/u/your_username/}{ Solved 300+ Data Structures and Algorithms Problems }}{}
+
+\resumePOR{}{\href{https://github.com/your_username}{ Smart India Hackathon Participant }}{}
+
+
+\resumeSubHeadingListEnd
+\vspace{-6mm}
+
+
+
+
+\end{document}

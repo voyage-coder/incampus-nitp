@@ -17,6 +17,14 @@ from app.models.placement_experience import PlacementExperience
 from app.models.marketplace_item import MarketplaceItem
 from app.models.lost_found_item import LostFoundItem
 from app.models.pyq import Pyq
+from app.models.resume import Resume
+from app.models.education import Education
+from app.models.experience import Experience
+from app.models.project import Project
+from app.models.skill import Skill
+from app.models.achievement import Achievement
+from app.models.certification import Certification
+from app.models.position_of_responsibilty import PositionOfResponsibility
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

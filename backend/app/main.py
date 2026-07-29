@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api import root, users, auth, admin, club, recruitment_drive, club_application, membership, event, event_registration, placement_experience, marketplace, lost_found, pyq
+from app.api import root, users, auth, admin, club, recruitment_drive, club_application, membership, event, event_registration, placement_experience, marketplace, lost_found, pyq, resume, education, experience, project, skill, achievement, certification, position_of_responsibilty, resume_pdf
 from app.core.config import DATABASE_URL
 # from app.api.auth import router as auth_router
 # from app.api.admin import router as admin_router
@@ -33,3 +33,12 @@ app.include_router(placement_experience.router)
 app.include_router(marketplace.router)
 app.include_router(lost_found.router)
 app.include_router(pyq.router)
+app.include_router(resume.router) 
+app.include_router(education.router)
+app.include_router(experience.router)
+app.include_router(project.router)
+app.include_router(skill.router)
+app.include_router(achievement.router)
+app.include_router(certification.router)
+app.include_router(position_of_responsibilty.router)
+app.include_router(resume_pdf.router)

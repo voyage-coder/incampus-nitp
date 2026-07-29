@@ -64,7 +64,7 @@ class User(Base):
     portfolio = Column(String, nullable=True)
     # hostel = Column(String, nullable=True)
     # room_number = Column(String, nullable=True)
-    # phone = Column(String, nullable=True)
+    phone = Column(String(15), nullable=True)
     is_active = Column(
         Boolean,
         default=True,
@@ -112,5 +112,11 @@ class User(Base):
     pyqs = relationship(
         "Pyq",
         back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    resume = relationship(
+        "Resume",
+        back_populates="user",
+        uselist=False,
         cascade="all, delete-orphan",
     )
