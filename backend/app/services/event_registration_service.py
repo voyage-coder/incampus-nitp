@@ -10,6 +10,9 @@ from datetime import datetime, timezone
 from fastapi import HTTPException, status
 
 from app.enums.event_status import EventStatus
+from app.notifications.enums import NotificationType
+from app.notifications.service import create_notification
+
 
 def register_for_event(
     db: Session,
@@ -47,6 +50,14 @@ def register_for_event(
     )
 
     db.add(registration)
+    create_notification(
+        db,
+        user_id=user.id,
+        title="Event registration confirmed",
+        message=f"You are registered for “{event.title}”.",
+        type=NotificationType.EVENT_REGISTERED,
+        link="/app/events",
+    )
     db.commit()
     db.refresh(registration)
 

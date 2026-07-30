@@ -22,6 +22,18 @@ from app.services.membership_service import (
     update_member_role,
 )
 
+
+def _membership_response(membership) -> MembershipResponse:
+    return MembershipResponse(
+        id=membership.id,
+        user_id=membership.user_id,
+        club_id=membership.club_id,
+        role=membership.role,
+        joined_at=membership.joined_at,
+        user_full_name=membership.user.full_name if membership.user else None,
+        user_email=membership.user.email if membership.user else None,
+    )
+
 router = APIRouter(
     tags=["Memberships"],
 )
@@ -36,10 +48,13 @@ def read_members(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return get_club_members(
-        db,
-        club_id,
-    )
+    return [
+        _membership_response(member)
+        for member in get_club_members(
+            db,
+            club_id,
+        )
+    ]
 
 
 @router.get(
@@ -51,10 +66,11 @@ def read_membership(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return get_membership(
+    membership = get_membership(
         db,
         membership_id,
     )
+    return _membership_response(membership)
 
 
 @router.patch(
@@ -74,11 +90,13 @@ def change_member_role(
         db,
     )
 
-    return update_member_role(
-        db,
-        club_id,
-        user_id,
-        role_data.role,
+    return _membership_response(
+        update_member_role(
+            db,
+            club_id,
+            user_id,
+            role_data.role,
+        )
     )
 
 

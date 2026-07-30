@@ -17,6 +17,8 @@ class RecruitmentDriveCreate(BaseModel):
     application_start: datetime
 
     application_end: datetime
+    status: RecruitmentStatus = RecruitmentStatus.OPEN
+
     @model_validator(mode="after")
     def validate_dates(self):
         if self.application_end <= self.application_start:

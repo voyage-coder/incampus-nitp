@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -24,38 +24,6 @@ router = APIRouter(
     tags=["Event Registration"],
 )
 
-@router.post(
-    "/{event_id}/register",
-    response_model=EventRegistrationResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-def register(
-    event_id: UUID,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    event = get_event_by_id(db, event_id)
-
-    if event is None:
-        raise HTTPException(404, "Event not found.")
-
-    existing = get_registration(
-        db,
-        event.id,
-        current_user.id,
-    )
-
-    if existing:
-        raise HTTPException(
-            400,
-            "Already registered.",
-        )
-
-    return register_for_event(
-        db,
-        event,
-        current_user,
-    )
 
 @router.post(
     "/{event_id}/register",
@@ -70,7 +38,10 @@ def register(
     event = get_event_by_id(db, event_id)
 
     if event is None:
-        raise HTTPException(404, "Event not found.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Event not found.",
+        )
 
     existing = get_registration(
         db,
@@ -80,8 +51,8 @@ def register(
 
     if existing:
         raise HTTPException(
-            400,
-            "Already registered.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Already registered.",
         )
 
     return register_for_event(
@@ -89,6 +60,39 @@ def register(
         event,
         current_user,
     )
+
+
+@router.delete(
+    "/{event_id}/register",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def unregister(
+    event_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    event = get_event_by_id(db, event_id)
+
+    if event is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Event not found.",
+        )
+
+    registration = get_registration(
+        db,
+        event.id,
+        current_user.id,
+    )
+
+    if not registration:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="You are not registered for this event.",
+        )
+
+    cancel_registration(db, registration)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get(
@@ -107,8 +111,8 @@ def view_registrations(
 
     if event is None:
         raise HTTPException(
-            404,
-            "Event not found.",
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Event not found.",
         )
 
     require_president(
@@ -121,5 +125,3 @@ def view_registrations(
         db,
         event.id,
     )
-
-

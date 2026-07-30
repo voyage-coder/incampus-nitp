@@ -57,12 +57,13 @@ def get_my_projects_endpoint(
     )
 
 @router.get(
-    "/{project_id}",
+    "/projects/{project_id}",
     response_model=ProjectResponse,
 )
 def get_project_by_id_endpoint(
     project_id: UUID,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     return get_project_by_id(
         project_id=project_id,
@@ -71,7 +72,7 @@ def get_project_by_id_endpoint(
 
 
 @router.patch(
-    "/{project_id}",
+    "/projects/{project_id}",
     response_model=ProjectResponse,
 )
 def update_project_endpoint(
@@ -89,7 +90,7 @@ def update_project_endpoint(
 
 
 @router.delete(
-    "/{project_id}",
+    "/projects/{project_id}",
     status_code=status.HTTP_200_OK,
 )
 def delete_project_endpoint(

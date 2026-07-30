@@ -31,6 +31,19 @@ router = APIRouter(
 )
 
 
+def _application_response(application) -> ClubApplicationResponse:
+    return ClubApplicationResponse(
+        id=application.id,
+        user_id=application.user_id,
+        club_id=application.club_id,
+        recruitment_drive_id=application.recruitment_drive_id,
+        status=application.status,
+        applied_at=application.applied_at,
+        user_full_name=application.user.full_name if application.user else None,
+        user_email=application.user.email if application.user else None,
+    )
+
+
 @router.post(
     "/recruitments/{recruitment_id}/apply",
     response_model=ClubApplicationResponse,
@@ -41,10 +54,12 @@ def apply(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return apply_for_recruitment(
-        db,
-        recruitment_id,
-        current_user,
+    return _application_response(
+        apply_for_recruitment(
+            db,
+            recruitment_id,
+            current_user,
+        )
     )
 
 
@@ -68,10 +83,13 @@ def read_applications(
         db,
     )
 
-    return get_recruitment_applications(
-        db,
-        recruitment_id,
-    )
+    return [
+        _application_response(app)
+        for app in get_recruitment_applications(
+            db,
+            recruitment_id,
+        )
+    ]
 
 
 @router.get(
@@ -89,12 +107,12 @@ def read_application(
     )
 
     require_president(
-        application.recruitment.club_id,
+        application.club_id,
         current_user,
         db,
     )
 
-    return application
+    return _application_response(application)
 
 
 @router.patch(
@@ -112,14 +130,16 @@ def approve(
     )
 
     require_president(
-        application.recruitment.club_id,
+        application.club_id,
         current_user,
         db,
     )
 
-    return approve_application(
-        db,
-        application_id,
+    return _application_response(
+        approve_application(
+            db,
+            application_id,
+        )
     )
 
 
@@ -138,12 +158,14 @@ def reject(
     )
 
     require_president(
-        application.recruitment.club_id,
+        application.club_id,
         current_user,
         db,
     )
 
-    return reject_application(
-        db,
-        application_id,
+    return _application_response(
+        reject_application(
+            db,
+            application_id,
+        )
     )

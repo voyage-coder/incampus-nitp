@@ -90,7 +90,7 @@ class PositionService:
 
         position = PositionOfResponsibility(
             resume_id=resume_id,
-            **data.model_dump(),
+            **data.model_dump(mode="json"),
         )
 
         self.db.add(position)
@@ -126,7 +126,7 @@ class PositionService:
             resume_id,
         )
 
-        update_data = data.model_dump(exclude_unset=True)
+        update_data = data.model_dump(exclude_unset=True, mode="json")
 
         for key, value in update_data.items():
             setattr(position, key, value)

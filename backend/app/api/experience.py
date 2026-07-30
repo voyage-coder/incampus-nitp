@@ -59,12 +59,13 @@ def get_my_experiences_endpoint(
     )
 
 @router.get(
-    "/{experience_id}",
+    "/experiences/{experience_id}",
     response_model=ExperienceResponse,
 )
 def get_experience_by_id_endpoint(
     experience_id: UUID,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     return get_experience_by_id(
         experience_id=experience_id,
@@ -73,7 +74,7 @@ def get_experience_by_id_endpoint(
 
 
 @router.patch(
-    "/{experience_id}",
+    "/experiences/{experience_id}",
     response_model=ExperienceResponse,
 )
 def update_experience_endpoint(
@@ -91,7 +92,7 @@ def update_experience_endpoint(
 
 
 @router.delete(
-    "/{experience_id}",
+    "/experiences/{experience_id}",
     status_code=status.HTTP_200_OK,
 )
 def delete_experience_endpoint(

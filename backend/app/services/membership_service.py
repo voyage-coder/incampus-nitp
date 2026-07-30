@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.club import Club
 from app.models.membership import Membership, MembershipRole
@@ -71,6 +71,7 @@ def get_club_members(
 
     return (
         db.query(Membership)
+        .options(joinedload(Membership.user))
         .filter(Membership.club_id == club_id)
         .all()
     )
@@ -104,6 +105,7 @@ def update_member_role(
 ):
     membership = (
         db.query(Membership)
+        .options(joinedload(Membership.user))
         .filter(
             Membership.club_id == club_id,
             Membership.user_id == user_id,

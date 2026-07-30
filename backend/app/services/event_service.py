@@ -42,7 +42,7 @@ def create_event(
         registration_deadline=event_data.registration_deadline,
         max_participants=event_data.max_participants,
         banner_url=event_data.banner_url,
-        status=EventStatus.DRAFT,
+        status=event_data.status,
     )
 
     db.add(event)
@@ -65,9 +65,18 @@ def get_event_by_id(
 
 
 def get_all_events(db: Session):
-
     return (
         db.query(Event)
+        .filter(Event.status == EventStatus.PUBLISHED)
+        .order_by(Event.start_time)
+        .all()
+    )
+
+
+def get_club_events(db: Session, club_id: UUID):
+    return (
+        db.query(Event)
+        .filter(Event.club_id == club_id)
         .order_by(Event.start_time)
         .all()
     )

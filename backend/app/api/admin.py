@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from sqlalchemy.orm import Session
 
@@ -48,8 +48,14 @@ def change_user_role(
         require_role([UserRole.ADMIN])
     ),
 ):
-    return update_user_role(
+    user = update_user_role(
         db,
         user_id,
-        role_data,
+        role_data.role,
     )
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found.",
+        )
+    return user

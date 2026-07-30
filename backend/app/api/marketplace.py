@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -13,14 +13,19 @@ from app.schemas.marketplace import (
     MarketplaceItemResponse,
     MarketplaceItemUpdate,
 )
+from app.schemas.upload import ImageUploadResponse
+from app.schemas.user import UserContactResponse
 from app.services.marketplace_service import (
     create_marketplace_item,
     delete_marketplace_item,
     get_all_marketplace_items,
     get_marketplace_item_by_id,
+    get_marketplace_seller_contact,
     mark_item_as_sold,
+    record_marketplace_view,
     update_marketplace_item,
 )
+from app.utils.file_upload import save_image
 
 router = APIRouter(
     prefix="/marketplace",
@@ -45,6 +50,18 @@ def create(
     )
 
 
+@router.post(
+    "/upload-image",
+    response_model=ImageUploadResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def upload_listing_image(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+):
+    return ImageUploadResponse(filename=save_image(file))
+
+
 @router.get(
     "",
     response_model=list[MarketplaceItemResponse],
@@ -65,6 +82,39 @@ def get_one(
     return get_marketplace_item_by_id(
         db,
         item_id,
+    )
+
+
+@router.get(
+    "/{item_id}/contact",
+    response_model=UserContactResponse,
+)
+def get_seller_contact(
+    item_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    seller = get_marketplace_seller_contact(
+        db,
+        item_id,
+        current_user,
+    )
+    return seller
+
+
+@router.post(
+    "/{item_id}/view",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def record_item_view(
+    item_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    record_marketplace_view(
+        db,
+        item_id,
+        current_user,
     )
 
 

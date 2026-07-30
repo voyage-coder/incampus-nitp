@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.models.club_application import (
@@ -18,6 +18,8 @@ from app.models.recruitment_drive import (
     RecruitmentStatus,
 )
 from app.models.user import User
+from app.notifications.enums import NotificationType
+from app.notifications.service import create_notification, notify_club_presidents
 
 
 def apply_for_recruitment(
@@ -96,7 +98,14 @@ def apply_for_recruitment(
         )
 
         db.add(application)
-        # db.commit()
+        notify_club_presidents(
+            db,
+            club_id=recruitment.club_id,
+            title="New club application",
+            message=f"{current_user.full_name} applied for “{recruitment.title}”.",
+            type=NotificationType.APPLICATION_RECEIVED,
+            link=f"/app/clubs/{recruitment.club_id}",
+        )
         try:
             db.commit()
         except SQLAlchemyError:
@@ -126,6 +135,7 @@ def get_recruitment_applications(
 
     return (
         db.query(ClubApplication)
+        .options(joinedload(ClubApplication.user))
         .filter(
             ClubApplication.recruitment_drive_id == recruitment_id
         )
@@ -139,6 +149,7 @@ def get_application(
 ):
     application = (
         db.query(ClubApplication)
+        .options(joinedload(ClubApplication.user))
         .filter(
             ClubApplication.id == application_id
         )
@@ -196,6 +207,15 @@ def approve_application(
 
         db.add(membership)
 
+        create_notification(
+            db,
+            user_id=application.user_id,
+            title="Application approved",
+            message="Your club application was approved. Welcome aboard!",
+            type=NotificationType.APPLICATION_APPROVED,
+            link=f"/app/clubs/{application.club_id}",
+        )
+
         db.commit()
 
         db.refresh(application)
@@ -225,6 +245,15 @@ def reject_application(
         )
 
     application.status = ApplicationStatus.REJECTED
+
+    create_notification(
+        db,
+        user_id=application.user_id,
+        title="Application not selected",
+        message="Your club application was not selected this time.",
+        type=NotificationType.APPLICATION_REJECTED,
+        link=f"/app/clubs/{application.club_id}",
+    )
 
     try:
         db.commit()

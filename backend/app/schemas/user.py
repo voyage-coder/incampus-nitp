@@ -47,6 +47,14 @@ class UpdateRole(BaseModel):
     role: UserRole
 
 
+class UserContactResponse(BaseModel):
+    full_name: str
+    email: str
+    phone: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 # for returning full profile details
 class UserProfileResponse(BaseModel):
     id: UUID
@@ -58,6 +66,7 @@ class UserProfileResponse(BaseModel):
     role: str
 
     bio: Optional[str] = None
+    phone: Optional[str] = None
     github: Optional[HttpUrl] = None
     linkedin: Optional[HttpUrl] = None
     portfolio: Optional[HttpUrl] = None
@@ -82,6 +91,7 @@ class UserUpdate(BaseModel):
         le=4,
     )
     bio: Optional[str] = None
+    phone: Optional[str] = None
     github: Optional[HttpUrl] = None
     linkedin: Optional[HttpUrl] = None
     portfolio: Optional[HttpUrl] = None

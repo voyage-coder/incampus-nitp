@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -13,6 +13,7 @@ from app.schemas.lost_found import (
     LostFoundItemResponse,
     LostFoundItemUpdate,
 )
+from app.schemas.upload import ImageUploadResponse
 from app.services.lost_found_service import (
     create_lost_found_item,
     delete_lost_found_item,
@@ -21,6 +22,7 @@ from app.services.lost_found_service import (
     mark_item_as_claimed,
     update_lost_found_item,
 )
+from app.utils.file_upload import save_image
 
 router = APIRouter(
     prefix="/lost-found",
@@ -51,6 +53,18 @@ def get_all(
     db: Session = Depends(get_db),
 ):
     return get_all_lost_found_items(db)
+
+
+@router.post(
+    "/upload-image",
+    response_model=ImageUploadResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def upload_report_image(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+):
+    return ImageUploadResponse(filename=save_image(file))
 
 
 @router.get(

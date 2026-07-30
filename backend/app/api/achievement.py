@@ -60,12 +60,13 @@ def get_my_achievements_endpoint(
 
 
 @router.get(
-    "/{achievement_id}",
+    "/achievements/{achievement_id}",
     response_model=AchievementResponse,
 )
 def get_achievement_by_id_endpoint(
     achievement_id: UUID,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     return get_achievement_by_id(
         achievement_id=achievement_id,
@@ -74,7 +75,7 @@ def get_achievement_by_id_endpoint(
 
 
 @router.patch(
-    "/{achievement_id}",
+    "/achievements/{achievement_id}",
     response_model=AchievementResponse,
 )
 def update_achievement_endpoint(
@@ -92,7 +93,7 @@ def update_achievement_endpoint(
 
 
 @router.delete(
-    "/{achievement_id}",
+    "/achievements/{achievement_id}",
     status_code=status.HTTP_200_OK,
 )
 def delete_achievement_endpoint(

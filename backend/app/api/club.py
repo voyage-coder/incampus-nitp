@@ -39,7 +39,7 @@ router = APIRouter(
 def create_new_club(
     club: ClubCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_role(UserRole.ADMIN))
+    current_user: User = Depends(require_role([UserRole.ADMIN])),
 ):
     return create_club(
         db,
@@ -79,7 +79,7 @@ def edit_club(
     club_id: UUID,
     club: ClubUpdate,
     db: Session = Depends(get_db),
-    current_user=Depends(require_role(UserRole.ADMIN)),
+    current_user: User = Depends(require_role([UserRole.ADMIN])),
 ):
     return update_club(
         db,
@@ -95,7 +95,7 @@ def edit_club(
 def remove_club(
     club_id: UUID,
     db: Session = Depends(get_db),
-    current_user=Depends(require_role(UserRole.ADMIN)),
+    current_user: User = Depends(require_role([UserRole.ADMIN])),
 ):
     delete_club(db, club_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

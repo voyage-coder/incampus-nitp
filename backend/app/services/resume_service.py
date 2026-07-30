@@ -12,6 +12,16 @@ def create_resume(
     current_user: User,
     resume_data: ResumeCreate,
 ) -> Resume:
+    existing = (
+        db.query(Resume)
+        .filter(Resume.user_id == current_user.id)
+        .first()
+    )
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Resume already exists.",
+        )
 
     resume = Resume(
         user_id=current_user.id,

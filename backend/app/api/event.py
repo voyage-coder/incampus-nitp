@@ -19,6 +19,7 @@ from app.schemas.event import (
 from app.services.event_service import (
     create_event,
     get_all_events,
+    get_club_events,
     get_event_by_id,
     update_event,
     delete_event,
@@ -52,6 +53,19 @@ def create_new_event(
         club_id,
         event_data,
     )
+
+
+@router.get(
+    "/clubs/{club_id}",
+    response_model=list[EventResponse],
+)
+def read_club_events(
+    club_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return get_club_events(db, club_id)
+
 
 @router.get(
     "",

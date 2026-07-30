@@ -1,8 +1,7 @@
-from collections import defaultdict
 from pathlib import Path
 import shutil
 import subprocess
-import tempfile
+from datetime import date, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -12,6 +11,21 @@ from app.models.resume import Resume
 from app.services.latex_render import render_resume
 from uuid import UUID
 from fastapi import HTTPException, status
+
+
+def _sortable_date(value):
+    if value is None:
+        return date.min
+    if isinstance(value, datetime):
+        return value.date()
+    return value
+
+
+def _sortable_number(value):
+    if value is None:
+        return 0
+    return value
+
 
 class PDFService:
 
@@ -66,49 +80,64 @@ class PDFService:
 
         educations = sorted(
             resume.educations,
-            key=lambda x: x.end_year,
+            key=lambda x: _sortable_number(x.end_year),
             reverse=True,
         )
 
         experiences = sorted(
             resume.experiences,
-            key=lambda x: x.start_date,
+            key=lambda x: _sortable_date(x.start_date),
             reverse=True,
         )
 
         projects = sorted(
             resume.projects,
-            key=lambda x: x.start_date or x.end_date,
+            key=lambda x: _sortable_date(x.start_date or x.end_date),
             reverse=True,
         )
 
         certifications = sorted(
             resume.certifications,
-            key=lambda x: x.issue_date or "",
+            key=lambda x: _sortable_date(x.issue_date),
             reverse=True,
         )
 
         achievements = sorted(
             resume.achievements,
-            key=lambda x: x.achievement_date or "",
+            key=lambda x: _sortable_date(x.achievement_date),
             reverse=True,
         )
 
         positions = sorted(
             resume.positions_of_responsibility,
-            key=lambda x: x.start_date,
+            key=lambda x: _sortable_date(x.start_date),
             reverse=True,
         )
 
-        skill_groups = defaultdict(list)
+        skill_group_labels = [
+            ("Programming Languages", ["PROGRAMMING_LANGUAGE"]),
+            ("Technologies", ["FRAMEWORK", "DATABASE", "CLOUD"]),
+            ("Tools", ["TOOL"]),
+            ("Other", ["OTHER"]),
+        ]
 
-        for skill in resume.skills:
-            skill_groups[skill.category.value].append(skill.name)
+        skill_groups = {}
 
-        current_education = None
+        for label, categories in skill_group_labels:
+            names = sorted(
+                skill.name
+                for skill in resume.skills
+                if skill.category.value in categories
+            )
+            if names:
+                skill_groups[label] = names
 
-        if educations:
-            current_education = educations[0]
+        logo_path = (
+            self.BASE_DIR
+            / "templates"
+            / "resume"
+            / "logo.png"
+        )
 
         context = {
             "user": user,
@@ -116,11 +145,12 @@ class PDFService:
             "educations": educations,
             "experiences": experiences,
             "projects": projects,
-            "skill_groups": dict(skill_groups),
+            "skill_groups": skill_groups,
             "certifications": certifications,
             "achievements": achievements,
             "positions_of_responsibility": positions,
-            "current_education": current_education,
+            "has_logo": logo_path.exists(),
+            "header_department": user.branch,
         }
 
         return context

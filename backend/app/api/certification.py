@@ -60,12 +60,13 @@ def get_my_certifications_endpoint(
 
 
 @router.get(
-    "/{certification_id}",
+    "/certifications/{certification_id}",
     response_model=CertificationResponse,
 )
 def get_certification_by_id_endpoint(
     certification_id: UUID,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     return get_certification_by_id(
         certification_id=certification_id,
@@ -74,7 +75,7 @@ def get_certification_by_id_endpoint(
 
 
 @router.patch(
-    "/{certification_id}",
+    "/certifications/{certification_id}",
     response_model=CertificationResponse,
 )
 def update_certification_endpoint(
@@ -92,7 +93,7 @@ def update_certification_endpoint(
 
 
 @router.delete(
-    "/{certification_id}",
+    "/certifications/{certification_id}",
     status_code=status.HTTP_200_OK,
 )
 def delete_certification_endpoint(

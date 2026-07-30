@@ -1,3 +1,4 @@
+from typing import Optional
 from datetime import datetime
 from uuid import UUID
 
@@ -24,6 +25,9 @@ class ClubApplicationResponse(BaseModel):
     status: ApplicationStatus
 
     applied_at: datetime
+
+    user_full_name: Optional[str] = None
+    user_email: Optional[str] = None
 
     model_config = ConfigDict(
         from_attributes=True

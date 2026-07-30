@@ -60,12 +60,13 @@ def get_my_skills_endpoint(
 
 
 @router.get(
-    "/{skill_id}",
+    "/skills/{skill_id}",
     response_model=SkillResponse,
 )
 def get_skill_by_id_endpoint(
     skill_id: UUID,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     return get_skill_by_id(
         skill_id=skill_id,
@@ -74,7 +75,7 @@ def get_skill_by_id_endpoint(
 
 
 @router.patch(
-    "/{skill_id}",
+    "/skills/{skill_id}",
     response_model=SkillResponse,
 )
 def update_skill_endpoint(
@@ -92,7 +93,7 @@ def update_skill_endpoint(
 
 
 @router.delete(
-    "/{skill_id}",
+    "/skills/{skill_id}",
     status_code=status.HTTP_200_OK,
 )
 def delete_skill_endpoint(

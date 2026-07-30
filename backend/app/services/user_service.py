@@ -13,7 +13,7 @@ def update_user_profile(
     current_user: User,
     user_update: UserUpdate,
 ):
-    update_data = user_update.model_dump(exclude_unset=True)
+    update_data = user_update.model_dump(exclude_unset=True, mode="json")
 
     for field, value in update_data.items():
         setattr(current_user, field, value)

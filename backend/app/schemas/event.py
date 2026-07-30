@@ -7,6 +7,15 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.enums.event_status import EventStatus
 
 
+from datetime import datetime
+from typing import Optional
+from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from app.enums.event_status import EventStatus
+
+
 class EventCreate(BaseModel):
     title: str = Field(..., min_length=3, max_length=150)
     description: str = Field(..., min_length=10)
@@ -16,6 +25,7 @@ class EventCreate(BaseModel):
     registration_deadline: datetime
     max_participants: int = Field(..., gt=0)
     banner_url: Optional[str] = None
+    status: EventStatus = EventStatus.PUBLISHED
 
 
 class EventUpdate(BaseModel):

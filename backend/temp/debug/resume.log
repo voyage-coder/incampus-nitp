@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.7.28)  29 JUL 2026 22:47
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.7.28)  30 JUL 2026 23:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -504,7 +504,7 @@ File: microtype.cfg 2026/03/01 v3.2d microtype main configuration file (RS)
 )
 LaTeX Info: Redefining \microtypesetup on input line 3065.
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 85.
+Package hyperref Info: Option `colorlinks' set `true' on input line 41.
 
 (C:\Program Files\MiKTeX\tex/latex/tcolorbox\tcolorbox.sty
 Package: tcolorbox 2025/11/28 version 6.9.0 text color boxes
@@ -966,47 +966,47 @@ Package nfssext-cfr Warning: Patching font initialisation macro for typewriter.
 ) (resume.aux)
 \openout1 = `resume.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/lmm/m/it on input line 189.
+LaTeX Font Info:    Checking defaults for OML/lmm/m/it on input line 116.
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
-89.
+16.
  (C:\Program Files\MiKTeX\tex/latex/lm\omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    ... okay on input line 189.
-LaTeX Font Info:    Checking defaults for OMS/lmsy/m/n on input line 189.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for OMS/lmsy/m/n on input line 116.
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-189.
+116.
 
 (C:\Program Files\MiKTeX\tex/latex/lm\omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    ... okay on input line 189.
-LaTeX Font Info:    Checking defaults for OT1/lmr/m/n on input line 189.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for OT1/lmr/m/n on input line 116.
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1
-89.
+16.
 
 (C:\Program Files\MiKTeX\tex/latex/lm\ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    ... okay on input line 189.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 189.
-LaTeX Font Info:    ... okay on input line 189.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 189.
-LaTeX Font Info:    ... okay on input line 189.
-LaTeX Font Info:    Checking defaults for OMX/lmex/m/n on input line 189.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 116.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 116.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for OMX/lmex/m/n on input line 116.
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-189.
+116.
 
 (C:\Program Files\MiKTeX\tex/latex/lm\omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    ... okay on input line 189.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 189.
-LaTeX Font Info:    ... okay on input line 189.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 189.
-LaTeX Font Info:    ... okay on input line 189.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 189.
-LaTeX Font Info:    ... okay on input line 189.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 116.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 116.
+LaTeX Font Info:    ... okay on input line 116.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 116.
+LaTeX Font Info:    ... okay on input line 116.
 
 (C:\Program Files\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -1063,18 +1063,18 @@ File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring ON on input line 189.
+Package hyperref Info: Link coloring ON on input line 116.
 (resume.out) (resume.out)
 \@outlinefile=\write4
 \openout4 = `resume.out'.
 
-LaTeX Info: Redefining \microtypecontext on input line 189.
-Package microtype Info: Applying patch `item' on input line 189.
-Package microtype Info: Applying patch `toc' on input line 189.
-Package microtype Info: Applying patch `eqnum' on input line 189.
-Package microtype Info: Applying patch `footnote' on input line 189.
-Package microtype Info: Applying patch `verbatim' on input line 189.
-LaTeX Info: Redefining \microtypesetup on input line 189.
+LaTeX Info: Redefining \microtypecontext on input line 116.
+Package microtype Info: Applying patch `item' on input line 116.
+Package microtype Info: Applying patch `toc' on input line 116.
+Package microtype Info: Applying patch `eqnum' on input line 116.
+Package microtype Info: Applying patch `footnote' on input line 116.
+Package microtype Info: Applying patch `verbatim' on input line 116.
+LaTeX Info: Redefining \microtypesetup on input line 116.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -1097,72 +1097,68 @@ Package: inputenc 2024/02/08 v1.3d Input encoding file
 \inpenc@prehook=\toks52
 \inpenc@posthook=\toks53
 )
-LaTeX Info: Redefining \swshape on input line 189.
+LaTeX Info: Redefining \swshape on input line 116.
 
 
 Package nfssext-cfr Warning: Overwriting kernel definition of \swshape  (new) o
-n input line 189.
+n input line 116.
 
 
 Package nfssext-cfr Warning: Overwriting the format's definition of \DeclareEnc
-odingSubset{} on input line 189.
+odingSubset{} on input line 116.
 
-<logo.png, id=66, 721.2546pt x 721.2546pt>
+<logo.png, id=62, 721.2546pt x 721.2546pt>
 File: logo.png Graphic file (type png)
 <use logo.png>
-Package pdftex.def Info: logo.png  used on input line 195.
+Package pdftex.def Info: logo.png  used on input line 122.
 (pdftex.def)             Requested size: 56.9055pt x 56.89815pt.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 195.
+(Font)              <10.95> on input line 122.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 195.
+(Font)              <8> on input line 122.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 195.
-LaTeX Font Info:    Trying to load font information for U+lasy on input line 19
-5.
+(Font)              <6> on input line 122.
+LaTeX Font Info:    Trying to load font information for U+lasy on input line 12
+2.
 (C:\Program Files\MiKTeX\tex/latex/base\ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 
 LaTeX Font Warning: Font shape `T1/cmr/b/sc' undefined
-(Font)              using `T1/cmr/bx/sc' instead on input line 211.
+(Font)              using `T1/cmr/bx/sc' instead on input line 134.
 
 
-Overfull \hbox (3.71794pt too wide) in paragraph at lines 229--229
+Overfull \hbox (3.71794pt too wide) in paragraph at lines 152--152
  []|\T1/cmr/b/n/10.95 CGPA/Percentage| 
  []
 
 
 LaTeX Font Warning: Font shape `T1/cmr/b/sc' undefined
-(Font)              using `T1/cmr/bx/sc' instead on input line 234.
+(Font)              using `T1/cmr/bx/sc' instead on input line 159.
 
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 236.
-
-LaTeX Font Warning: Font shape `T1/cmr/b/sc' undefined
-(Font)              using `T1/cmr/bx/sc' instead on input line 258.
-
+(Font)              <5> on input line 161.
 LaTeX Font Info:    Trying to load font information for U+fontawesomebrands0 on
- input line 267.
+ input line 167.
 
 (C:\Users\koppi\AppData\Roaming\MiKTeX\tex/latex/fontawesome5\ufontawesomebrand
 s0.fd)
 LaTeX Font Info:    Font shape `U/fontawesomebrands0/solid/n' in size <9> not a
 vailable
 (Font)              Font shape `U/fontawesomebrands0/regular/n' tried instead o
-n input line 267.
+n input line 167.
 
 
 LaTeX Font Warning: Font shape `T1/cmr/b/sc' undefined
-(Font)              using `T1/cmr/bx/sc' instead on input line 302.
+(Font)              using `T1/cmr/bx/sc' instead on input line 202.
 
 
 LaTeX Font Warning: Font shape `T1/cmr/b/sc' undefined
-(Font)              using `T1/cmr/bx/sc' instead on input line 323.
+(Font)              using `T1/cmr/bx/sc' instead on input line 215.
 
 
 LaTeX Font Warning: Font shape `T1/cmr/b/sc' undefined
-(Font)              using `T1/cmr/bx/sc' instead on input line 344.
+(Font)              using `T1/cmr/bx/sc' instead on input line 229.
 
 
 Package fancyhdr Warning: \footskip is too small (4.08pt): 
@@ -1179,18 +1175,18 @@ LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `resume.out' has not changed.
-(rerunfilecheck)             Checksum: F647F46139D527D57FA8DF22A8A2F469;553.
+(rerunfilecheck)             Checksum: 21285B37B5C99102628F9E24AF1DC113;460.
  ) 
 Here is how much of TeX's memory you used:
- 34492 strings out of 467871
- 691306 string characters out of 5428443
- 1159018 words of memory out of 5000000
- 62825 multiletter control sequences out of 15000+600000
- 654615 words of font info for 73 fonts, out of 8000000 for 9000
+ 34482 strings out of 467871
+ 691232 string characters out of 5428443
+ 1151822 words of memory out of 5000000
+ 62815 multiletter control sequences out of 15000+600000
+ 654956 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  102i,11n,108p,1247b,466s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\koppi\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti
-1000.pk> <C:\Users\koppi\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi60
+ <C:\Users\koppi\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
+1095.pk> <C:\Users\koppi\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi60
 0\ecrm0900.pk> <C:\Users\koppi\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec
 /dpi600\ecti0900.pk> <C:\Users\koppi\AppData\Local\MiKTeX\fonts/pk/ljfour/jknap
 pen/ec/dpi600\ecrb1095.pk> <C:\Users\koppi\AppData\Local\MiKTeX\fonts/pk/ljfour
@@ -1199,9 +1195,9 @@ ljfour/jknappen/ec/dpi600\ecrm1095.pk> <C:\Users\koppi\AppData\Local\MiKTeX\fon
 ts/pk/ljfour/jknappen/ec/dpi600\ecrb1728.pk><C:/Users/koppi/AppData/Roaming/MiK
 TeX/fonts/type1/public/fontawesome5/FontAwesome5Brands-Regular.pfb><C:/Program 
 Files/MiKTeX/fonts/type1/public/lm/lmsy6.pfb>
-Output written on resume.pdf (1 page, 396440 bytes).
+Output written on resume.pdf (1 page, 385721 bytes).
 PDF statistics:
- 317 PDF objects out of 1000 (max. 8388607)
- 8 named destinations out of 1000 (max. 500000)
- 9944 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 285 PDF objects out of 1000 (max. 8388607)
+ 7 named destinations out of 1000 (max. 500000)
+ 10448 words of extra memory for PDF output out of 12000 (max. 10000000)
 

@@ -12,6 +12,10 @@ backend/.mypy_cache/
 # Environment Variables
 backend/.env
 
+# Generated / temp (resume PDF build artifacts)
+backend/generated/
+backend/temp/
+
 # Logs
 backend/*.log
 

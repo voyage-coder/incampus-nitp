@@ -78,7 +78,7 @@ def create_recruitment_drive(
         description=recruitment_data.description,
         application_start=recruitment_data.application_start,
         application_end=recruitment_data.application_end,
-        status=RecruitmentStatus.DRAFT,
+        status=recruitment_data.status,
     )
 
     db.add(recruitment)

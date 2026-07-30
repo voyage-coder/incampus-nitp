@@ -25,6 +25,7 @@ from app.models.skill import Skill
 from app.models.achievement import Achievement
 from app.models.certification import Certification
 from app.models.position_of_responsibilty import PositionOfResponsibility
+from app.notifications.models import Notification
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

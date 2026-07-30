@@ -57,12 +57,13 @@ def get_resume_educations(
 
 
 @router.get(
-    "/{education_id}",
+    "/educations/{education_id}",
     response_model=EducationResponse,
 )
 def get_education_by_id_endpoint(
     education_id: UUID,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     return get_education_by_id(
         education_id=education_id,
@@ -71,7 +72,7 @@ def get_education_by_id_endpoint(
 
 
 @router.patch(
-    "/{education_id}",
+    "/educations/{education_id}",
     response_model=EducationResponse,
 )
 def update_education_endpoint(
@@ -89,7 +90,7 @@ def update_education_endpoint(
 
 
 @router.delete(
-    "/{education_id}",
+    "/educations/{education_id}",
     status_code=status.HTTP_200_OK,
 )
 def delete_education_endpoint(
