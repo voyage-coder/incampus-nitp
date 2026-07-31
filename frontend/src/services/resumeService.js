@@ -6,10 +6,27 @@ export const createResume = async (payload) =>
 export const updateResume = async (payload) =>
   (await api.patch('/resume/me', payload)).data;
 export const downloadResumePdf = async (resumeId) => {
-  const response = await api.get(`/resume/${resumeId}/pdf`, {
-    responseType: 'blob',
-  });
-  return response.data;
+  try {
+    const response = await api.get(`/resume/${resumeId}/pdf`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  } catch (error) {
+    const data = error?.response?.data;
+    if (data instanceof Blob) {
+      const text = await data.text();
+      try {
+        const parsed = JSON.parse(text);
+        const detail = parsed?.detail;
+        if (typeof detail === 'string') {
+          error.message = detail;
+        }
+      } catch {
+        if (text) error.message = text;
+      }
+    }
+    throw error;
+  }
 };
 
 export const addEducation = async (resumeId, payload) =>

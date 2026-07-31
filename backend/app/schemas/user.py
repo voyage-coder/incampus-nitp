@@ -67,9 +67,9 @@ class UserProfileResponse(BaseModel):
 
     bio: Optional[str] = None
     phone: Optional[str] = None
-    github: Optional[HttpUrl] = None
-    linkedin: Optional[HttpUrl] = None
-    portfolio: Optional[HttpUrl] = None
+    github: Optional[str] = None
+    linkedin: Optional[str] = None
+    portfolio: Optional[str] = None
     profile_image: Optional[str] = None
 
     is_active: bool

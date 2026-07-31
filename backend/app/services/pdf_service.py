@@ -190,22 +190,37 @@ class PDFService:
                 temp_dir / "logo.png",
             )
 
-        result = subprocess.run(
-            [
-                "pdflatex",
-                "-interaction=nonstopmode",
-                "resume.tex",
-            ],
-            cwd=temp_dir,
-            capture_output=True,
-            text=True,
-        )
-
-        print(result.stdout)
-        print(result.stderr)
+        try:
+            result = subprocess.run(
+                [
+                    "pdflatex",
+                    "-interaction=nonstopmode",
+                    "resume.tex",
+                ],
+                cwd=temp_dir,
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
+        except FileNotFoundError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=(
+                    "PDF engine (pdflatex) is not installed on this server. "
+                    "Deploy the backend with the provided Dockerfile."
+                ),
+            ) from exc
+        except subprocess.TimeoutExpired as exc:
+            raise HTTPException(
+                status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+                detail="PDF generation timed out. Please try again.",
+            ) from exc
 
         if result.returncode != 0:
-            raise RuntimeError("PDF generation failed.")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="PDF generation failed. Check resume content and try again.",
+            )
 
         output_pdf = self.OUTPUT_DIR / f"resume_{resume_id}.pdf"
 
