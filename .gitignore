@@ -15,6 +15,7 @@ backend/.env
 # Generated / temp (resume PDF build artifacts)
 backend/generated/
 backend/temp/
+backend/bin/
 
 # Logs
 backend/*.log

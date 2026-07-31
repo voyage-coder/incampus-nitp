@@ -9,6 +9,7 @@ from sqlalchemy.orm import joinedload
 
 from app.models.resume import Resume
 from app.services.latex_render import render_resume
+from app.utils.pdf_engine import resolve_pdf_engine
 from uuid import UUID
 from fastapi import HTTPException, status
 
@@ -248,8 +249,8 @@ class PDFService:
         return pdf_path
 
     def _compile_tex(self, temp_dir: Path, tex_file: Path):
-        tectonic = shutil.which("tectonic")
-        if tectonic:
+        tectonic = resolve_pdf_engine()
+        if tectonic and "tectonic" in Path(tectonic).name.lower():
             return subprocess.run(
                 [
                     tectonic,
@@ -262,14 +263,18 @@ class PDFService:
                 timeout=180,
             )
 
-        return subprocess.run(
-            [
-                "pdflatex",
-                "-interaction=nonstopmode",
-                tex_file.name,
-            ],
-            cwd=temp_dir,
-            capture_output=True,
-            text=True,
-            timeout=120,
-        )
+        pdflatex = shutil.which("pdflatex")
+        if pdflatex:
+            return subprocess.run(
+                [
+                    pdflatex,
+                    "-interaction=nonstopmode",
+                    tex_file.name,
+                ],
+                cwd=temp_dir,
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
+
+        raise FileNotFoundError("No PDF engine found")

@@ -1,9 +1,10 @@
 services:
   - type: web
     name: incampus-nitp-api
-    runtime: docker
+    runtime: python
     rootDir: backend
-    dockerfilePath: Dockerfile
+    buildCommand: bash render-build.sh
+    startCommand: bash start.sh
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL

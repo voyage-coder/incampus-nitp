@@ -1,6 +1,6 @@
-import shutil
-
 from fastapi import APIRouter
+
+from app.utils.pdf_engine import get_pdf_engine_name, resolve_pdf_engine
 
 router = APIRouter()
 
@@ -12,15 +12,11 @@ def home():
 
 @router.get("/health")
 def health():
-    if shutil.which("tectonic"):
-        pdf_engine = "tectonic"
-    elif shutil.which("pdflatex"):
-        pdf_engine = "pdflatex"
-    else:
-        pdf_engine = None
+    pdf_engine = get_pdf_engine_name()
 
     return {
         "status": "ok",
         "pdf_engine": pdf_engine,
         "pdf_ready": pdf_engine is not None,
+        "pdf_path": resolve_pdf_engine(),
     }
