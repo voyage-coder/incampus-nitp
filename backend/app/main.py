@@ -31,11 +31,13 @@ from app.api import (
 )
 from app.notifications.router import router as notifications_router
 from app.core.config import CORS_ORIGINS, CORS_ORIGIN_REGEX
+from app.db.migrations import run_migrations
 from app.utils.pdf_engine import ensure_pdf_engine
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    run_migrations()
     ensure_pdf_engine()
     yield
 
