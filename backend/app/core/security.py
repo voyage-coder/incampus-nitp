@@ -1,5 +1,6 @@
 # from passlib.context import CryptContext
 from pwdlib import PasswordHash
+from pwdlib.hashers.bcrypt import BcryptHasher
 
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError # creates and verifies JWTs
@@ -87,7 +88,7 @@ oauth2_scheme = OAuth2PasswordBearer(
 # we use this during login
 # ALL THIS IS USING PASSLIB 
 # NOW CHANGING TO PWDLIB
-password_hash = PasswordHash.recommended()
+password_hash = PasswordHash((BcryptHasher(),))
 def hash_password(password: str) -> str:
     return password_hash.hash(password)
 
