@@ -270,7 +270,6 @@ class PDFService:
             return subprocess.run(
                 [
                     tectonic,
-                    "--synctex=0",
                     "--keep-logs",
                     "--print",
                     tex_file.name,
