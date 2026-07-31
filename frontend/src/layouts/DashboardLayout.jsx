@@ -9,6 +9,7 @@ import {
 import { useState } from 'react';
 import { ADMIN_NAV, APP_NAV } from '../constants/navigation';
 import { useAuth } from '../context/AuthContext';
+import { usePreferences } from '../context/PreferencesContext';
 import { NotificationBell, NotificationsProvider } from '../features/notifications';
 import Avatar from '../components/ui/Avatar';
 import Badge from '../components/ui/Badge';
@@ -65,6 +66,7 @@ function NavItems({ onNavigate, isAdmin }) {
 
 export default function DashboardLayout() {
   const { user, logout, isAdmin } = useAuth();
+  const { compact } = usePreferences();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -172,7 +174,12 @@ export default function DashboardLayout() {
           </div>
         </header>
 
-        <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <main
+          className={cn(
+            'px-4 py-6 sm:px-6 lg:px-8 lg:py-8',
+            compact && 'px-3 py-4 sm:px-4 lg:px-6 lg:py-5'
+          )}
+        >
           <PageTransition>
             <Outlet />
           </PageTransition>

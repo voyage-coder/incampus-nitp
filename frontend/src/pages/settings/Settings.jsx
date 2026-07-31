@@ -1,29 +1,14 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PageHeader from '../../components/ui/PageHeader';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import { useAuth } from '../../context/AuthContext';
+import { usePreferences } from '../../context/PreferencesContext';
 
 export default function Settings() {
   const { user, logout, isAdmin } = useAuth();
-  const [prefs, setPrefs] = useState(() => {
-    try {
-      return JSON.parse(
-        localStorage.getItem('incampus_prefs') ||
-          '{"compact":false,"emailDigest":true}'
-      );
-    } catch {
-      return { compact: false, emailDigest: true };
-    }
-  });
-
-  const updatePref = (key, value) => {
-    const next = { ...prefs, [key]: value };
-    setPrefs(next);
-    localStorage.setItem('incampus_prefs', JSON.stringify(next));
-  };
+  const { prefs, updatePref } = usePreferences();
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -62,25 +47,35 @@ export default function Settings() {
           <h2 className="font-display text-lg font-bold">Preferences</h2>
           <div className="mt-4 space-y-3">
             <label className="flex items-center justify-between gap-4 rounded-2xl bg-cream px-4 py-3">
-              <span className="text-sm font-medium text-ink">
-                Compact dashboard spacing
-              </span>
+              <div>
+                <span className="text-sm font-medium text-ink">
+                  Compact dashboard spacing
+                </span>
+                <p className="mt-0.5 text-xs text-muted">
+                  Tighter layout on the dashboard and workspace pages.
+                </p>
+              </div>
               <input
                 type="checkbox"
                 checked={prefs.compact}
                 onChange={(e) => updatePref('compact', e.target.checked)}
-                className="h-4 w-4 accent-[#F46173]"
+                className="h-4 w-4 shrink-0 accent-[#F46173]"
               />
             </label>
             <label className="flex items-center justify-between gap-4 rounded-2xl bg-cream px-4 py-3">
-              <span className="text-sm font-medium text-ink">
-                Weekly campus digest reminder
-              </span>
+              <div>
+                <span className="text-sm font-medium text-ink">
+                  Weekly campus digest reminder
+                </span>
+                <p className="mt-0.5 text-xs text-muted">
+                  Show a weekly summary card on your dashboard.
+                </p>
+              </div>
               <input
                 type="checkbox"
                 checked={prefs.emailDigest}
                 onChange={(e) => updatePref('emailDigest', e.target.checked)}
-                className="h-4 w-4 accent-[#F46173]"
+                className="h-4 w-4 shrink-0 accent-[#F46173]"
               />
             </label>
           </div>

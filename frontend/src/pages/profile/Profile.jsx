@@ -22,7 +22,7 @@ import {
   updateProfile,
   uploadProfileImage,
 } from '../../services/authService';
-import { getErrorMessage } from '../../utils/format';
+import { getErrorMessage, normalizeUrl } from '../../utils/format';
 
 export default function Profile() {
   const { user, refreshUser, loading: authLoading } = useAuth();
@@ -32,6 +32,7 @@ export default function Profile() {
   const [error, setError] = useState('');
   const [form, setForm] = useState({
     full_name: '',
+    roll_number: '',
     branch: 'CSE',
     year: 1,
     bio: '',
@@ -45,7 +46,8 @@ export default function Profile() {
     if (user) {
       setForm({
         full_name: user.full_name || '',
-        branch: user.branch || 'CSE',
+        roll_number: user.roll_number?.startsWith('G-') ? '' : user.roll_number || '',
+        branch: user.branch === 'TBD' ? 'CSE' : user.branch || 'CSE',
         year: user.year || 1,
         bio: user.bio || '',
         phone: user.phone || '',
@@ -64,14 +66,15 @@ export default function Profile() {
     try {
       const payload = {
         full_name: form.full_name,
+        roll_number: form.roll_number.trim().toUpperCase(),
         branch: form.branch,
         year: Number(form.year),
         bio: form.bio || null,
         phone: form.phone?.trim() || null,
       };
-      if (form.github?.trim()) payload.github = form.github.trim();
-      if (form.linkedin?.trim()) payload.linkedin = form.linkedin.trim();
-      if (form.portfolio?.trim()) payload.portfolio = form.portfolio.trim();
+      if (form.github?.trim()) payload.github = normalizeUrl(form.github);
+      if (form.linkedin?.trim()) payload.linkedin = normalizeUrl(form.linkedin);
+      if (form.portfolio?.trim()) payload.portfolio = normalizeUrl(form.portfolio);
 
       await updateProfile(payload);
       await refreshUser();
@@ -152,9 +155,11 @@ export default function Profile() {
           <h2 className="mt-4 font-display text-2xl font-bold">{user.full_name}</h2>
           <p className="text-sm text-muted">{user.email}</p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
-            <Badge tone="primary">{user.branch}</Badge>
+            <Badge tone="primary">{user.branch === 'TBD' ? 'Branch not set' : user.branch}</Badge>
             <Badge>Year {user.year}</Badge>
-            <Badge tone="accent">{user.roll_number}</Badge>
+            {user.roll_number && !user.roll_number.startsWith('G-') && (
+              <Badge tone="accent">{user.roll_number}</Badge>
+            )}
           </div>
           <label className="mt-5 inline-flex cursor-pointer">
             <input type="file" accept="image/*" className="hidden" onChange={onUpload} />
@@ -174,6 +179,14 @@ export default function Profile() {
                   value={form.full_name}
                   onChange={(e) =>
                     setForm({ ...form, full_name: e.target.value })
+                  }
+                  containerClassName="sm:col-span-2"
+                />
+                <Input
+                  label="Roll number"
+                  value={form.roll_number}
+                  onChange={(e) =>
+                    setForm({ ...form, roll_number: e.target.value })
                   }
                   containerClassName="sm:col-span-2"
                 />
@@ -214,6 +227,7 @@ export default function Profile() {
                 />
                 <Input
                   label="LinkedIn"
+                  placeholder="www.linkedin.com/in/yourname"
                   value={form.linkedin}
                   onChange={(e) =>
                     setForm({ ...form, linkedin: e.target.value })
@@ -260,7 +274,7 @@ export default function Profile() {
                 <h3 className="font-display text-lg font-bold">Links</h3>
                 <div className="mt-3 space-y-2 text-sm">
                   <a
-                    href={user.github || '#'}
+                    href={normalizeUrl(user.github) || '#'}
                     className="flex items-center gap-2 text-muted hover:text-ink"
                     target="_blank"
                     rel="noreferrer"
@@ -269,7 +283,7 @@ export default function Profile() {
                     {user.github || 'Add GitHub'}
                   </a>
                   <a
-                    href={user.linkedin || '#'}
+                    href={normalizeUrl(user.linkedin) || '#'}
                     className="flex items-center gap-2 text-muted hover:text-ink"
                     target="_blank"
                     rel="noreferrer"
@@ -278,7 +292,7 @@ export default function Profile() {
                     {user.linkedin || 'Add LinkedIn'}
                   </a>
                   <a
-                    href={user.portfolio || '#'}
+                    href={normalizeUrl(user.portfolio) || '#'}
                     className="flex items-center gap-2 text-muted hover:text-ink"
                     target="_blank"
                     rel="noreferrer"

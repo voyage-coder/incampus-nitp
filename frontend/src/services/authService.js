@@ -16,6 +16,11 @@ export async function registerRequest(payload) {
   return data;
 }
 
+export async function googleLoginRequest(idToken) {
+  const { data } = await api.post('/auth/google', { id_token: idToken });
+  return data;
+}
+
 export async function getMe() {
   const { data } = await api.get('/auth/me');
   return data;

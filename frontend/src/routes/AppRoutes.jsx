@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '../context/AuthContext';
+import { PreferencesProvider } from '../context/PreferencesContext';
 import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
 import AuthLayout from '../layouts/AuthLayout';
@@ -16,6 +17,7 @@ import Placements from '../pages/placements/Placements';
 import Pyqs from '../pages/pyqs/Pyqs';
 import LostFound from '../pages/lostfound/LostFound';
 import Profile from '../pages/profile/Profile';
+import CompleteProfile from '../pages/profile/CompleteProfile';
 import ResumeBuilder from '../pages/resume/ResumeBuilder';
 import Settings from '../pages/settings/Settings';
 import { NotificationsPage } from '../features/notifications';
@@ -27,6 +29,7 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <PreferencesProvider>
         <Routes>
           <Route path="/" element={<Landing />} />
 
@@ -38,6 +41,7 @@ export default function AppRoutes() {
           <Route element={<ProtectedRoute />}>
             <Route path="/app" element={<DashboardLayout />}>
               <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="complete-profile" element={<CompleteProfile />} />
               <Route path="dashboard" element={<DashboardHome />} />
               <Route path="marketplace" element={<Marketplace />} />
               <Route path="events" element={<Events />} />
@@ -61,6 +65,7 @@ export default function AppRoutes() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </PreferencesProvider>
       </AuthProvider>
     </BrowserRouter>
   );

@@ -12,6 +12,7 @@ alembic==1.18.5
 python-jose[cryptography]==3.5.0
 pwdlib[bcrypt,argon2]==0.3.0
 bcrypt==4.3.0
+google-auth==2.48.0
 
 # Validation & config
 pydantic[email]==2.13.4

@@ -26,6 +26,11 @@ import { getPyqs } from '../../services/pyqService';
 import { getPlacementExperiences } from '../../services/placementService';
 import { getMyResume } from '../../services/resumeService';
 import { formatDate, formatPrice, timeAgo } from '../../utils/format';
+import { isWithinPastWeek } from '../../constants/preferences';
+import { usePreferences } from '../../context/PreferencesContext';
+import { useNotifications } from '../../features/notifications/hooks/useNotifications';
+import WeeklyDigestCard from '../../components/dashboard/WeeklyDigestCard';
+import { cn } from '../../utils/cn';
 
 const quickActions = [
   { to: '/app/marketplace', label: 'Sell an item', icon: ShoppingBag },
@@ -59,6 +64,8 @@ function resumeProgress(resume) {
 
 export default function DashboardHome() {
   const { user } = useAuth();
+  const { compact } = usePreferences();
+  const { unreadCount } = useNotifications();
   const eventsQ = useFetch(getEvents, []);
   const marketQ = useFetch(getMarketplaceItems, []);
   const clubsQ = useFetch(getClubs, []);
@@ -99,6 +106,48 @@ export default function DashboardHome() {
   const placements = (Array.isArray(placementsQ.data) ? placementsQ.data : []).slice(0, 3);
   const progress = resumeProgress(resumeQ.data);
 
+  const digestStats = useMemo(() => {
+    const events = Array.isArray(eventsQ.data) ? eventsQ.data : [];
+    const market = Array.isArray(marketQ.data) ? marketQ.data : [];
+    const placementList = Array.isArray(placementsQ.data) ? placementsQ.data : [];
+
+    const now = Date.now();
+    const weekAhead = now + 7 * 24 * 60 * 60 * 1000;
+
+    const upcomingCount = events.filter((event) => {
+      const start = new Date(event.start_time).getTime();
+      return (
+        !Number.isNaN(start) &&
+        start >= now &&
+        start <= weekAhead &&
+        (event.status === 'PUBLISHED' || !event.status)
+      );
+    }).length;
+
+    const newMarketCount = market.filter(
+      (item) =>
+        item.status === 'AVAILABLE' && isWithinPastWeek(item.created_at)
+    ).length;
+
+    const newPlacementCount = placementList.filter((item) =>
+      isWithinPastWeek(item.created_at)
+    ).length;
+
+    return {
+      upcomingEvents: upcomingCount,
+      newMarketplace: newMarketCount,
+      newPlacements: newPlacementCount,
+      unreadNotifications: unreadCount,
+      resumeProgress: progress,
+    };
+  }, [
+    eventsQ.data,
+    marketQ.data,
+    placementsQ.data,
+    unreadCount,
+    progress,
+  ]);
+
   const activity = useMemo(() => {
     const feed = [];
     recentMarket.forEach((item) =>
@@ -134,7 +183,7 @@ export default function DashboardHome() {
     eventsQ.error || marketQ.error || clubsQ.error || placementsQ.error;
 
   return (
-    <div className="mx-auto max-w-wide space-y-6">
+    <div className={cn('mx-auto max-w-wide', compact ? 'space-y-4' : 'space-y-6')}>
       <PageHeader
         eyebrow="Workspace"
         title={`${greeting()}, ${user?.full_name?.split(' ')[0] || 'there'}`}
@@ -152,7 +201,9 @@ export default function DashboardHome() {
         />
       )}
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <WeeklyDigestCard {...digestStats} />
+
+      <div className={cn('grid', compact ? 'gap-3 lg:grid-cols-3' : 'gap-4 lg:grid-cols-3')}>
         <Card className="lg:col-span-2" hover={false}>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
@@ -194,10 +245,15 @@ export default function DashboardHome() {
       </div>
 
       <section>
-        <div className="mb-3 flex items-center justify-between">
+        <div className={cn('flex items-center justify-between', compact ? 'mb-2' : 'mb-3')}>
           <h2 className="font-display text-xl font-bold">Quick actions</h2>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div
+          className={cn(
+            'grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6',
+            compact ? 'gap-2' : 'gap-3'
+          )}
+        >
           {quickActions.map((action) => (
             <Link key={action.to} to={action.to}>
               <Card className="h-full">
@@ -211,17 +267,22 @@ export default function DashboardHome() {
         </div>
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="space-y-6">
+      <div
+        className={cn(
+          'grid xl:grid-cols-[1.2fr_0.8fr]',
+          compact ? 'gap-4' : 'gap-6'
+        )}
+      >
+        <div className={compact ? 'space-y-4' : 'space-y-6'}>
           <section>
-            <div className="mb-3 flex items-center justify-between">
+            <div className={cn('flex items-center justify-between', compact ? 'mb-2' : 'mb-3')}>
               <h2 className="font-display text-xl font-bold">Upcoming events</h2>
               <Link to="/app/events" className="text-sm font-semibold text-primary">
                 View all
               </Link>
             </div>
             {eventsQ.loading ? (
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className={cn('grid sm:grid-cols-3', compact ? 'gap-2' : 'gap-3')}>
                 <Skeleton className="h-36" />
                 <Skeleton className="h-36" />
                 <Skeleton className="h-36" />
@@ -233,7 +294,7 @@ export default function DashboardHome() {
                 description="When clubs publish events, they’ll show up here."
               />
             ) : (
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className={cn('grid sm:grid-cols-3', compact ? 'gap-2' : 'gap-3')}>
                 {upcomingEvents.map((event) => (
                   <Card key={event.id}>
                     <Badge tone="primary">{event.venue || 'Campus'}</Badge>
@@ -256,7 +317,7 @@ export default function DashboardHome() {
           </section>
 
           <section>
-            <div className="mb-3 flex items-center justify-between">
+            <div className={cn('flex items-center justify-between', compact ? 'mb-2' : 'mb-3')}>
               <h2 className="font-display text-xl font-bold">Recent marketplace</h2>
               <Link
                 to="/app/marketplace"
@@ -266,7 +327,7 @@ export default function DashboardHome() {
               </Link>
             </div>
             {marketQ.loading ? (
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className={cn('grid sm:grid-cols-2', compact ? 'gap-2' : 'gap-3')}>
                 <Skeleton className="h-28" />
                 <Skeleton className="h-28" />
               </div>
@@ -277,7 +338,7 @@ export default function DashboardHome() {
                 description="Be the first to list something useful."
               />
             ) : (
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className={cn('grid sm:grid-cols-2', compact ? 'gap-2' : 'gap-3')}>
                 {recentMarket.map((item) => (
                   <Card key={item.id}>
                     <div className="flex items-start justify-between gap-3">
@@ -298,7 +359,7 @@ export default function DashboardHome() {
           </section>
 
           <section>
-            <div className="mb-3 flex items-center justify-between">
+            <div className={cn('flex items-center justify-between', compact ? 'mb-2' : 'mb-3')}>
               <h2 className="font-display text-xl font-bold">Recent PYQs</h2>
               <Link to="/app/pyqs" className="text-sm font-semibold text-primary">
                 Library
@@ -313,7 +374,7 @@ export default function DashboardHome() {
                 description="Upload papers to help your juniors."
               />
             ) : (
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className={cn('grid sm:grid-cols-2', compact ? 'gap-2' : 'gap-3')}>
                 {pyqs.map((pyq) => (
                   <Card key={pyq.id}>
                     <h3 className="font-semibold text-ink">{pyq.subject}</h3>
@@ -327,9 +388,9 @@ export default function DashboardHome() {
           </section>
         </div>
 
-        <div className="space-y-6">
+        <div className={compact ? 'space-y-4' : 'space-y-6'}>
           <section>
-            <div className="mb-3 flex items-center justify-between">
+            <div className={cn('flex items-center justify-between', compact ? 'mb-2' : 'mb-3')}>
               <h2 className="font-display text-xl font-bold">Club picks</h2>
               <Link to="/app/clubs" className="text-sm font-semibold text-primary">
                 All clubs
@@ -359,7 +420,7 @@ export default function DashboardHome() {
           </section>
 
           <section>
-            <div className="mb-3 flex items-center justify-between">
+            <div className={cn('flex items-center justify-between', compact ? 'mb-2' : 'mb-3')}>
               <h2 className="font-display text-xl font-bold">Placement updates</h2>
               <Link
                 to="/app/placements"
@@ -387,11 +448,13 @@ export default function DashboardHome() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-display text-xl font-bold">Activity feed</h2>
+            <h2 className={cn('font-display text-xl font-bold', compact ? 'mb-2' : 'mb-3')}>
+              Activity feed
+            </h2>
             {activity.length === 0 ? (
               <EmptyState title="No recent activity" />
             ) : (
-              <Card hover={false} className="space-y-4">
+              <Card hover={false} className={compact ? 'space-y-3' : 'space-y-4'}>
                 {activity.map((item) => (
                   <div
                     key={item.id}

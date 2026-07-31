@@ -6,7 +6,6 @@ from uuid import UUID
 from pydantic import ConfigDict
 from app.enums.role import UserRole
 from typing import Optional
-from pydantic import HttpUrl
 
 class UserCreate(BaseModel):
     full_name : str = Field(min_length=3, max_length=100)
@@ -41,6 +40,10 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+
+class GoogleAuthRequest(BaseModel):
+    id_token: str = Field(min_length=20)
+
 # for admin to epromote students to club-heads and admins
 class UpdateRole(BaseModel):
     # role: str
@@ -74,6 +77,7 @@ class UserProfileResponse(BaseModel):
 
     is_active: bool = True
     is_verified: bool = False
+    profile_complete: bool = True
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -85,6 +89,11 @@ class UserUpdate(BaseModel):
         max_length=100,
     )
     branch: Optional[str] = None
+    roll_number: Optional[str] = Field(
+        default=None,
+        min_length=3,
+        max_length=20,
+    )
     year: Optional[int] = Field(
         default=None,
         ge=1,
@@ -92,7 +101,7 @@ class UserUpdate(BaseModel):
     )
     bio: Optional[str] = None
     phone: Optional[str] = None
-    github: Optional[HttpUrl] = None
-    linkedin: Optional[HttpUrl] = None
-    portfolio: Optional[HttpUrl] = None
+    github: Optional[str] = None
+    linkedin: Optional[str] = None
+    portfolio: Optional[str] = None
     profile_image: Optional[str] = None

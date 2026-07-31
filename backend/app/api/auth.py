@@ -1,11 +1,16 @@
 from fastapi import APIRouter, Depends
 
-from app.schemas.user import (UserCreate, UserResponse, UserLogin, Token)
+from app.schemas.user import (UserCreate, UserResponse, UserLogin, Token, GoogleAuthRequest)
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 
 from fastapi import HTTPException, status
-from app.services.auth_service import (get_user_by_email, create_user, authenticate_user)
+from app.services.auth_service import (
+    get_user_by_email,
+    create_user,
+    authenticate_user,
+    authenticate_google_user,
+)
 from app.core.security import create_access_token
 from app.dependencies.auth import get_current_user
 from app.models.user import User
@@ -89,6 +94,26 @@ def login(
     return Token(
         access_token=access_token,
         token_type="bearer"
+    )
+
+
+@router.post(
+    "/google",
+    response_model=Token,
+)
+def login_with_google(
+    body: GoogleAuthRequest,
+    db: Session = Depends(get_db),
+):
+    user = authenticate_google_user(db, body.id_token)
+    access_token = create_access_token(
+        data={
+            "sub": user.email,
+        }
+    )
+    return Token(
+        access_token=access_token,
+        token_type="bearer",
     )
 
 

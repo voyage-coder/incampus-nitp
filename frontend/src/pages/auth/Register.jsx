@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
+import GoogleSignInButton from '../../components/auth/GoogleSignInButton';
 import { BRANCHES, YEARS } from '../../constants/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { getErrorMessage } from '../../utils/format';
+import { needsProfileSetup } from '../../utils/profile';
 
 const initial = {
   full_name: '',
@@ -18,10 +20,11 @@ const initial = {
 };
 
 export default function Register() {
-  const { register } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState(initial);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
 
   const onChange = (e) => {
@@ -30,6 +33,27 @@ export default function Register() {
       ...prev,
       [name]: name === 'year' ? Number(value) : value,
     }));
+  };
+
+  const onGoogleSuccess = async (credentialResponse) => {
+    if (!credentialResponse?.credential) {
+      setError('Google sign-in did not return a credential.');
+      return;
+    }
+
+    setGoogleLoading(true);
+    setError('');
+    try {
+      const profile = await loginWithGoogle(credentialResponse.credential);
+      navigate(
+        needsProfileSetup(profile) ? '/app/complete-profile' : '/app/dashboard',
+        { replace: true }
+      );
+    } catch (err) {
+      setError(getErrorMessage(err, 'Google sign-in failed'));
+    } finally {
+      setGoogleLoading(false);
+    }
   };
 
   const onSubmit = async (e) => {
@@ -93,6 +117,7 @@ export default function Register() {
           type="password"
           required
           minLength={8}
+          autoComplete="new-password"
           value={form.password}
           onChange={onChange}
         />
@@ -121,10 +146,26 @@ export default function Register() {
           type="submit"
           className="sm:col-span-2"
           loading={loading}
+          disabled={googleLoading}
         >
           Create account
         </Button>
       </form>
+
+      <div className="my-6 flex items-center gap-3">
+        <div className="h-px flex-1 bg-line" />
+        <span className="text-xs font-medium uppercase tracking-wide text-muted">
+          or
+        </span>
+        <div className="h-px flex-1 bg-line" />
+      </div>
+
+      <GoogleSignInButton
+        onSuccess={onGoogleSuccess}
+        onError={() => setError('Google sign-in was cancelled or failed.')}
+        disabled={loading || googleLoading}
+        text="signup_with"
+      />
 
       <p className="mt-6 text-center text-sm text-muted">
         Already have an account?{' '}

@@ -22,3 +22,8 @@ CORS_ORIGINS = [
 
 # Optional regex for Vercel preview/production URLs (e.g. *.vercel.app)
 CORS_ORIGIN_REGEX = os.getenv("CORS_ORIGIN_REGEX", r"https://.*\.vercel\.app")
+
+# Google OAuth (Sign in with Google)
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+# Restrict sign-in to this email domain, e.g. nitp.ac.in → only *@nitp.ac.in
+GOOGLE_ALLOWED_EMAIL_DOMAIN = os.getenv("GOOGLE_ALLOWED_EMAIL_DOMAIN", "nitp.ac.in").strip().lower()

@@ -1,9 +1,10 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Skeleton } from '../components/ui/Skeleton';
+import { needsProfileSetup } from '../utils/profile';
 
 export default function ProtectedRoute() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -20,6 +21,11 @@ export default function ProtectedRoute() {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  const onCompleteProfile = location.pathname === '/app/complete-profile';
+  if (needsProfileSetup(user) && !onCompleteProfile) {
+    return <Navigate to="/app/complete-profile" replace />;
   }
 
   return <Outlet />;

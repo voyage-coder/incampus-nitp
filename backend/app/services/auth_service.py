@@ -5,10 +5,12 @@ from sqlalchemy import select
 # select(User).where(User.email == "abc@gmail.com")
 from app.models.user import User
 from app.core.security import hash_password, password_needs_rehash, verify_password
+from app.core.config import GOOGLE_ALLOWED_EMAIL_DOMAIN
 from app.schemas.user import UserCreate
 from app.enums.role import UserRole
+from app.services.google_auth import verify_google_id_token
 from uuid import UUID
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -78,6 +80,9 @@ def authenticate_user(
     if not user:
         return None
 
+    if not user.password_hash:
+        return None
+
     if not verify_password(password, user.password_hash):
         return None
 
@@ -90,6 +95,81 @@ def authenticate_user(
             db.rollback()
 
     return user
+
+def assert_allowed_email_domain(email: str) -> None:
+    if not GOOGLE_ALLOWED_EMAIL_DOMAIN:
+        return
+
+    domain = email.strip().lower().split("@")[-1]
+    if domain != GOOGLE_ALLOWED_EMAIL_DOMAIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Only @{GOOGLE_ALLOWED_EMAIL_DOMAIN} email addresses can sign in.",
+        )
+
+
+def get_user_by_google_id(db: Session, google_id: str) -> User | None:
+    statement = select(User).where(User.google_id == google_id)
+    return db.execute(statement).scalar_one_or_none()
+
+
+def authenticate_google_user(db: Session, id_token: str) -> User:
+    payload = verify_google_id_token(id_token)
+
+    email = str(payload["email"]).strip().lower()
+    google_id = str(payload["sub"])
+    full_name = str(payload.get("name") or email.split("@")[0])
+    picture = payload.get("picture")
+
+    assert_allowed_email_domain(email)
+
+    user = get_user_by_google_id(db, google_id)
+    if user:
+        if user.email != email:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Google account email does not match our records.",
+            )
+        return user
+
+    user = get_user_by_email(db, email)
+    if user:
+        if user.google_id and user.google_id != google_id:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="This email is linked to a different Google account.",
+            )
+        user.google_id = google_id
+        user.is_verified = True
+        if picture and not user.profile_image:
+            user.profile_image = picture
+        try:
+            db.commit()
+            db.refresh(user)
+        except SQLAlchemyError:
+            db.rollback()
+            raise
+        return user
+
+    new_user = User(
+        full_name=full_name[:100],
+        email=email,
+        google_id=google_id,
+        password_hash=None,
+        roll_number=None,
+        branch="TBD",
+        year=1,
+        profile_image=picture,
+        is_verified=True,
+    )
+    db.add(new_user)
+    try:
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise
+    db.refresh(new_user)
+    return new_user
 
 # for admin
 def get_all_users(db: Session):

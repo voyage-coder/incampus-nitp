@@ -29,7 +29,13 @@ class User(Base):
     )
     password_hash = Column(
         Text,
-        nullable=False
+        nullable=True,
+    )
+    google_id = Column(
+        String(255),
+        unique=True,
+        nullable=True,
+        index=True,
     )
     roll_number = Column(
         String(20),

@@ -4,20 +4,44 @@ import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+import GoogleSignInButton from '../../components/auth/GoogleSignInButton';
 import { useAuth } from '../../context/AuthContext';
 import { getErrorMessage } from '../../utils/format';
+import { needsProfileSetup } from '../../utils/profile';
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
 
   const onChange = (e) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const onGoogleSuccess = async (credentialResponse) => {
+    if (!credentialResponse?.credential) {
+      setError('Google sign-in did not return a credential.');
+      return;
+    }
+
+    setGoogleLoading(true);
+    setError('');
+    try {
+      const profile = await loginWithGoogle(credentialResponse.credential);
+      const redirectTo = needsProfileSetup(profile)
+        ? '/app/complete-profile'
+        : location.state?.from?.pathname || '/app/dashboard';
+      navigate(redirectTo, { replace: true });
+    } catch (err) {
+      setError(getErrorMessage(err, 'Google sign-in failed'));
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -92,10 +116,28 @@ export default function Login() {
           </div>
         )}
 
-        <Button type="submit" className="w-full" loading={loading}>
+        <Button type="submit" className="w-full" loading={loading} disabled={googleLoading}>
           Continue
         </Button>
       </form>
+
+      <div className="my-6 flex items-center gap-3">
+        <div className="h-px flex-1 bg-line" />
+        <span className="text-xs font-medium uppercase tracking-wide text-muted">
+          or
+        </span>
+        <div className="h-px flex-1 bg-line" />
+      </div>
+
+      <GoogleSignInButton
+        onSuccess={onGoogleSuccess}
+        onError={() => setError('Google sign-in was cancelled or failed.')}
+        disabled={loading || googleLoading}
+      />
+
+      {googleLoading && (
+        <p className="mt-3 text-center text-sm text-muted">Signing in with Google…</p>
+      )}
 
       <p className="mt-6 text-center text-sm text-muted">
         New here?{' '}

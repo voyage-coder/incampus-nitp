@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
   getProfile,
+  googleLoginRequest,
   loginRequest,
   registerRequest,
 } from '../services/authService';
@@ -47,6 +48,15 @@ export function AuthProvider({ children }) {
     return profile;
   };
 
+  const loginWithGoogle = async (idToken) => {
+    const data = await googleLoginRequest(idToken);
+    localStorage.setItem(TOKEN_KEY, data.access_token);
+    setToken(data.access_token);
+    const profile = await getProfile();
+    setUser(profile);
+    return profile;
+  };
+
   const register = async (payload) => {
     await registerRequest(payload);
     return login({ email: payload.email, password: payload.password });
@@ -68,12 +78,13 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(token && user),
       isAdmin,
       login,
+      loginWithGoogle,
       register,
       logout,
       refreshUser,
       setUser,
     }),
-    [user, token, loading, isAdmin, refreshUser]
+    [user, token, loading, isAdmin, refreshUser, loginWithGoogle]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

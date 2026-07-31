@@ -1,3 +1,10 @@
+export function normalizeUrl(value) {
+  if (!value?.trim()) return null;
+  const trimmed = value.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
 export function formatPrice(value) {
   const num = Number(value);
   if (Number.isNaN(num)) return '—';
