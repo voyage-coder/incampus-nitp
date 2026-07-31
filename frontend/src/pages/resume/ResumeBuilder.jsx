@@ -63,6 +63,7 @@ export default function ResumeBuilder() {
   const [error, setError] = useState('');
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [exportingPdf, setExportingPdf] = useState(false);
   const [message, setMessage] = useState('');
   const [basics, setBasics] = useState({
     name: '',
@@ -261,7 +262,9 @@ export default function ResumeBuilder() {
   };
 
   const onDownload = async () => {
-    if (!resume?.id) return;
+    if (!resume?.id || exportingPdf) return;
+    setExportingPdf(true);
+    setError('');
     try {
       const blob = await downloadResumePdf(resume.id);
       const url = URL.createObjectURL(blob);
@@ -270,8 +273,11 @@ export default function ResumeBuilder() {
       a.download = 'resume.pdf';
       a.click();
       URL.revokeObjectURL(url);
+      setMessage('Resume PDF downloaded.');
     } catch (err) {
       setError(getErrorMessage(err, 'PDF export failed'));
+    } finally {
+      setExportingPdf(false);
     }
   };
 
@@ -312,9 +318,14 @@ export default function ResumeBuilder() {
         description="Multi-step editing with a live preview of your campus resume."
         actions={
           resume?.id && (
-            <Button variant="secondary" onClick={onDownload}>
+            <Button
+              variant="secondary"
+              onClick={onDownload}
+              loading={exportingPdf}
+              disabled={exportingPdf}
+            >
               <Download className="h-4 w-4" />
-              Export PDF
+              {exportingPdf ? 'Generating PDF…' : 'Export PDF'}
             </Button>
           )
         }

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.dependencies.auth import get_current_user
 from app.db.session import get_db
 from app.models.user import User
+from app.services.pdf_lock import pdf_compile_slot
 from app.services.pdf_service import PDFService
 
 router = APIRouter(
@@ -22,10 +23,11 @@ def generate_resume_pdf(
     db: Session = Depends(get_db),
 ):
     try:
-        pdf_path = PDFService(db).generate_pdf(
-            resume_id=resume_id,
-            user_id=current_user.id,
-        )
+        with pdf_compile_slot():
+            pdf_path = PDFService(db).generate_pdf(
+                resume_id=resume_id,
+                user_id=current_user.id,
+            )
     except HTTPException:
         raise
     except Exception as exc:
