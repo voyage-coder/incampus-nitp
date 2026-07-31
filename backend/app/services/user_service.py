@@ -1,12 +1,32 @@
 from sqlalchemy.orm import Session
 import os
 from app.models.user import User
-from app.schemas.user import UserUpdate
+from app.schemas.user import UserProfileResponse, UserUpdate
 from fastapi import UploadFile
 from app.utils.file_upload import save_profile_image
 UPLOAD_DIR = "uploads"
-def get_user_profile(current_user: User):
-    return current_user
+
+def serialize_user_profile(user: User) -> UserProfileResponse:
+    return UserProfileResponse(
+        id=user.id,
+        full_name=user.full_name,
+        email=user.email,
+        roll_number=user.roll_number,
+        branch=user.branch,
+        year=user.year,
+        role=str(user.role or "student"),
+        bio=user.bio,
+        phone=user.phone,
+        github=user.github or None,
+        linkedin=user.linkedin or None,
+        portfolio=user.portfolio or None,
+        profile_image=user.profile_image,
+        is_active=bool(user.is_active),
+        is_verified=bool(user.is_verified),
+    )
+
+def get_user_profile(current_user: User) -> UserProfileResponse:
+    return serialize_user_profile(current_user)
 
 def update_user_profile(
     db: Session,
@@ -25,7 +45,7 @@ def update_user_profile(
         raise
     db.refresh(current_user)
 
-    return current_user
+    return serialize_user_profile(current_user)
 
 def upload_profile_image(
     db: Session,
@@ -52,4 +72,4 @@ def upload_profile_image(
         raise
     db.refresh(current_user)
 
-    return current_user
+    return serialize_user_profile(current_user)

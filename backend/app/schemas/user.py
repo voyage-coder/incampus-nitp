@@ -60,9 +60,9 @@ class UserProfileResponse(BaseModel):
     id: UUID
     full_name: str
     email: str
-    roll_number: str
+    roll_number: Optional[str] = None
     branch: str
-    year: int
+    year: Optional[int] = None
     role: str
 
     bio: Optional[str] = None
@@ -72,8 +72,8 @@ class UserProfileResponse(BaseModel):
     portfolio: Optional[str] = None
     profile_image: Optional[str] = None
 
-    is_active: bool
-    is_verified: bool
+    is_active: bool = True
+    is_verified: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 

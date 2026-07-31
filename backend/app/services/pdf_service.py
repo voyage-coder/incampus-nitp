@@ -191,22 +191,12 @@ class PDFService:
             )
 
         try:
-            result = subprocess.run(
-                [
-                    "pdflatex",
-                    "-interaction=nonstopmode",
-                    "resume.tex",
-                ],
-                cwd=temp_dir,
-                capture_output=True,
-                text=True,
-                timeout=120,
-            )
+            result = self._compile_tex(temp_dir, tex_file)
         except FileNotFoundError as exc:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail=(
-                    "PDF engine (pdflatex) is not installed on this server. "
+                    "PDF engine is not installed on this server. "
                     "Deploy the backend with the provided Dockerfile."
                 ),
             ) from exc
@@ -257,4 +247,29 @@ class PDFService:
 
         return pdf_path
 
-    
+    def _compile_tex(self, temp_dir: Path, tex_file: Path):
+        tectonic = shutil.which("tectonic")
+        if tectonic:
+            return subprocess.run(
+                [
+                    tectonic,
+                    "--synctex=0",
+                    tex_file.name,
+                ],
+                cwd=temp_dir,
+                capture_output=True,
+                text=True,
+                timeout=180,
+            )
+
+        return subprocess.run(
+            [
+                "pdflatex",
+                "-interaction=nonstopmode",
+                tex_file.name,
+            ],
+            cwd=temp_dir,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )

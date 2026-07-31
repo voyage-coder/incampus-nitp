@@ -45,7 +45,10 @@ export function useNotificationsState() {
   }, [refresh]);
 
   useEffect(() => {
-    const id = window.setInterval(refresh, 10000);
+    const id = window.setInterval(() => {
+      if (document.hidden) return;
+      refresh();
+    }, 30000);
     return () => window.clearInterval(id);
   }, [refresh]);
 
