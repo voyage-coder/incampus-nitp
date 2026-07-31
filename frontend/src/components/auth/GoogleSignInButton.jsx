@@ -1,10 +1,12 @@
 import { GoogleLogin } from '@react-oauth/google';
+import Button from '../ui/Button';
 import { cn } from '../../utils/cn';
 
 export default function GoogleSignInButton({
   onSuccess,
   onError,
   disabled = false,
+  loading = false,
   className,
   text = 'continue_with',
 }) {
@@ -12,6 +14,14 @@ export default function GoogleSignInButton({
 
   if (!clientId) {
     return null;
+  }
+
+  if (loading) {
+    return (
+      <Button variant="secondary" className="w-full" loading disabled>
+        Signing in with Google…
+      </Button>
+    );
   }
 
   return (

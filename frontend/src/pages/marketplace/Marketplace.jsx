@@ -45,6 +45,7 @@ export default function Marketplace() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [actionId, setActionId] = useState(null);
   const [formError, setFormError] = useState('');
   const [contactOpen, setContactOpen] = useState(false);
   const [contactLoading, setContactLoading] = useState(false);
@@ -201,20 +202,26 @@ export default function Marketplace() {
 
   const onDelete = async (item) => {
     if (!window.confirm(`Delete “${item.title}”?`)) return;
+    setActionId(`delete-${item.id}`);
     try {
       await deleteMarketplaceItem(item.id);
       await reload();
     } catch (err) {
       alert(getErrorMessage(err));
+    } finally {
+      setActionId(null);
     }
   };
 
   const onSold = async (id) => {
+    setActionId(`sold-${id}`);
     try {
       await markItemSold(id);
       await reload();
     } catch (err) {
       alert(getErrorMessage(err));
+    } finally {
+      setActionId(null);
     }
   };
 
@@ -384,6 +391,7 @@ export default function Marketplace() {
                         variant="secondary"
                         size="sm"
                         className="flex-1"
+                        loading={actionId === `sold-${item.id}`}
                         onClick={() => onSold(item.id)}
                       >
                         Mark sold
@@ -399,6 +407,7 @@ export default function Marketplace() {
                     <Button
                       variant="danger"
                       size="sm"
+                      loading={actionId === `delete-${item.id}`}
                       onClick={() => onDelete(item)}
                     >
                       <Trash2 className="h-4 w-4" />

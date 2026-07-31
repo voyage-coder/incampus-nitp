@@ -47,6 +47,7 @@ export default function Placements() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [formError, setFormError] = useState('');
 
   const items = useMemo(() => {
@@ -133,12 +134,15 @@ export default function Placements() {
 
   const onDelete = async (item) => {
     if (!window.confirm(`Delete experience for ${item.company}?`)) return;
+    setDeletingId(item.id);
     try {
       await deletePlacementExperience(item.id);
       if (selected?.id === item.id) setSelected(null);
       await reload();
     } catch (err) {
       alert(getErrorMessage(err));
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -242,6 +246,7 @@ export default function Placements() {
                     <Button
                       variant="danger"
                       size="sm"
+                      loading={deletingId === item.id}
                       onClick={() => onDelete(item)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -295,6 +300,7 @@ export default function Placements() {
                 <Button
                   variant="danger"
                   size="sm"
+                  loading={deletingId === selected.id}
                   onClick={() => onDelete(selected)}
                 >
                   Delete

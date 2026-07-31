@@ -28,6 +28,7 @@ export default function Profile() {
   const { user, refreshUser, loading: authLoading } = useAuth();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [form, setForm] = useState({
@@ -90,7 +91,7 @@ export default function Profile() {
   const onUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setSaving(true);
+    setUploading(true);
     setError('');
     try {
       await uploadProfileImage(file);
@@ -99,7 +100,8 @@ export default function Profile() {
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
-      setSaving(false);
+      setUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -162,10 +164,25 @@ export default function Profile() {
             )}
           </div>
           <label className="mt-5 inline-flex cursor-pointer">
-            <input type="file" accept="image/*" className="hidden" onChange={onUpload} />
-            <span className="inline-flex h-11 items-center gap-2 rounded-2xl border border-line bg-cream px-4 text-sm font-semibold text-ink">
-              <Upload className="h-4 w-4" />
-              Upload photo
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={onUpload}
+              disabled={uploading || saving}
+            />
+            <span className="inline-flex h-11 items-center gap-2 rounded-2xl border border-line bg-cream px-4 text-sm font-semibold text-ink disabled:opacity-60">
+              {uploading ? (
+                <>
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
+                  Uploading…
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4" />
+                  Upload photo
+                </>
+              )}
             </span>
           </label>
         </Card>

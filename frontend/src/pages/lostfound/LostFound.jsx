@@ -39,6 +39,7 @@ export default function LostFound() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [actionId, setActionId] = useState(null);
   const [formError, setFormError] = useState('');
   const [contactOpen, setContactOpen] = useState(false);
   const [contactLoading, setContactLoading] = useState(false);
@@ -150,20 +151,26 @@ export default function LostFound() {
 
   const onDelete = async (item) => {
     if (!window.confirm(`Delete “${item.title}”?`)) return;
+    setActionId(`delete-${item.id}`);
     try {
       await deleteLostFoundItem(item.id);
       await reload();
     } catch (err) {
       alert(getErrorMessage(err));
+    } finally {
+      setActionId(null);
     }
   };
 
   const onClaim = async (id) => {
+    setActionId(`claim-${id}`);
     try {
       await claimLostFoundItem(id);
       await reload();
     } catch (err) {
       alert(getErrorMessage(err));
+    } finally {
+      setActionId(null);
     }
   };
 
@@ -287,6 +294,7 @@ export default function LostFound() {
                     <Button
                       variant="secondary"
                       size="sm"
+                      loading={actionId === `claim-${item.id}`}
                       onClick={() => onClaim(item.id)}
                     >
                       Mark claimed
@@ -303,6 +311,7 @@ export default function LostFound() {
                   <Button
                     variant="danger"
                     size="sm"
+                    loading={actionId === `delete-${item.id}`}
                     onClick={() => onDelete(item)}
                   >
                     <Trash2 className="h-4 w-4" />

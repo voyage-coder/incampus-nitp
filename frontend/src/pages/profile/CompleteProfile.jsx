@@ -5,6 +5,7 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
+import LoadingOverlay from '../../components/ui/LoadingOverlay';
 import { BRANCHES, YEARS } from '../../constants/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { updateProfile } from '../../services/authService';
@@ -68,6 +69,7 @@ export default function CompleteProfile() {
         description="Google sign-in created your account. Add your campus details so classmates and features work correctly."
       />
 
+      <LoadingOverlay show={saving} label="Saving your profile…">
       <Card hover={false} className="mt-6">
         <p className="mb-4 text-sm text-muted">
           Signed in as <span className="font-medium text-ink">{user.email}</span>
@@ -111,6 +113,7 @@ export default function CompleteProfile() {
           </Button>
         </form>
       </Card>
+      </LoadingOverlay>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
+import LoadingOverlay from '../../components/ui/LoadingOverlay';
 import GoogleSignInButton from '../../components/auth/GoogleSignInButton';
 import { BRANCHES, YEARS } from '../../constants/navigation';
 import { useAuth } from '../../context/AuthContext';
@@ -70,11 +71,18 @@ export default function Register() {
     }
   };
 
+  const busy = loading || googleLoading;
+
   return (
+    <LoadingOverlay
+      show={busy}
+      label={googleLoading ? 'Signing in with Google…' : 'Creating your account…'}
+      className="w-full max-w-xl"
+    >
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-xl rounded-4xl border border-line bg-surface p-6 shadow-card sm:p-8"
+      className="w-full rounded-4xl border border-line bg-surface p-6 shadow-card sm:p-8"
     >
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
         Join InCampus
@@ -94,6 +102,7 @@ export default function Register() {
           value={form.full_name}
           onChange={onChange}
           containerClassName="sm:col-span-2"
+          disabled={busy}
         />
         <Input
           label="Email"
@@ -103,6 +112,7 @@ export default function Register() {
           value={form.email}
           onChange={onChange}
           containerClassName="sm:col-span-2"
+          disabled={busy}
         />
         <Input
           label="Roll number"
@@ -110,6 +120,7 @@ export default function Register() {
           required
           value={form.roll_number}
           onChange={onChange}
+          disabled={busy}
         />
         <Input
           label="Password"
@@ -120,6 +131,7 @@ export default function Register() {
           autoComplete="new-password"
           value={form.password}
           onChange={onChange}
+          disabled={busy}
         />
         <Select
           label="Branch"
@@ -127,6 +139,7 @@ export default function Register() {
           value={form.branch}
           onChange={onChange}
           options={BRANCHES}
+          disabled={busy}
         />
         <Select
           label="Year"
@@ -134,6 +147,7 @@ export default function Register() {
           value={form.year}
           onChange={onChange}
           options={YEARS.map((y) => ({ value: y, label: `Year ${y}` }))}
+          disabled={busy}
         />
 
         {error && (
@@ -146,7 +160,7 @@ export default function Register() {
           type="submit"
           className="sm:col-span-2"
           loading={loading}
-          disabled={googleLoading}
+          disabled={busy}
         >
           Create account
         </Button>
@@ -163,7 +177,8 @@ export default function Register() {
       <GoogleSignInButton
         onSuccess={onGoogleSuccess}
         onError={() => setError('Google sign-in was cancelled or failed.')}
-        disabled={loading || googleLoading}
+        disabled={busy}
+        loading={googleLoading}
         text="signup_with"
       />
 
@@ -174,5 +189,6 @@ export default function Register() {
         </Link>
       </p>
     </motion.div>
+    </LoadingOverlay>
   );
 }

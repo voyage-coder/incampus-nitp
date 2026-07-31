@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+import LoadingOverlay from '../../components/ui/LoadingOverlay';
 import GoogleSignInButton from '../../components/auth/GoogleSignInButton';
 import { useAuth } from '../../context/AuthContext';
 import { getErrorMessage } from '../../utils/format';
@@ -58,11 +59,18 @@ export default function Login() {
     }
   };
 
+  const busy = loading || googleLoading;
+
   return (
+    <LoadingOverlay
+      show={busy}
+      label={googleLoading ? 'Signing in with Google…' : 'Signing in…'}
+      className="w-full max-w-md"
+    >
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-md rounded-4xl border border-line bg-surface p-6 shadow-card sm:p-8"
+      className="w-full rounded-4xl border border-line bg-surface p-6 shadow-card sm:p-8"
     >
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
         Welcome back
@@ -84,6 +92,7 @@ export default function Login() {
           placeholder="you@nitp.ac.in"
           value={form.email}
           onChange={onChange}
+          disabled={busy}
         />
         <div className="relative">
           <Input
@@ -95,6 +104,7 @@ export default function Login() {
             placeholder="••••••••"
             value={form.password}
             onChange={onChange}
+            disabled={busy}
           />
           <button
             type="button"
@@ -116,7 +126,7 @@ export default function Login() {
           </div>
         )}
 
-        <Button type="submit" className="w-full" loading={loading} disabled={googleLoading}>
+        <Button type="submit" className="w-full" loading={loading} disabled={busy}>
           Continue
         </Button>
       </form>
@@ -132,12 +142,9 @@ export default function Login() {
       <GoogleSignInButton
         onSuccess={onGoogleSuccess}
         onError={() => setError('Google sign-in was cancelled or failed.')}
-        disabled={loading || googleLoading}
+        disabled={busy}
+        loading={googleLoading}
       />
-
-      {googleLoading && (
-        <p className="mt-3 text-center text-sm text-muted">Signing in with Google…</p>
-      )}
 
       <p className="mt-6 text-center text-sm text-muted">
         New here?{' '}
@@ -146,5 +153,6 @@ export default function Login() {
         </Link>
       </p>
     </motion.div>
+    </LoadingOverlay>
   );
 }

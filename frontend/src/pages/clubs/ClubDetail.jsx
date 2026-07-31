@@ -117,6 +117,9 @@ export default function ClubDetail() {
     status: 'OPEN',
   });
   const [saving, setSaving] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
+
+  const isPending = (key) => pendingAction === key;
 
   // Applications modal
   const [appsOpen, setAppsOpen] = useState(false);
@@ -209,22 +212,30 @@ export default function ClubDetail() {
 
   const onDeleteRecruitment = async (drive) => {
     if (!window.confirm(`Delete induction “${drive.title}”?`)) return;
+    const key = `delete-recruit-${drive.id}`;
+    setPendingAction(key);
     try {
       await deleteRecruitment(drive.id);
       flash('Induction deleted.');
       await recruitmentsQ.reload();
     } catch (err) {
       flash('', getErrorMessage(err));
+    } finally {
+      setPendingAction(null);
     }
   };
 
   const onApply = async (recruitmentId) => {
+    const key = `apply-${recruitmentId}`;
+    setPendingAction(key);
     flash('', '');
     try {
       await applyToRecruitment(recruitmentId);
       flash('Application submitted.');
     } catch (err) {
       flash('', getErrorMessage(err, 'Could not apply'));
+    } finally {
+      setPendingAction(null);
     }
   };
 
@@ -244,6 +255,8 @@ export default function ClubDetail() {
   };
 
   const reviewApp = async (applicationId, action) => {
+    const key = `review-${applicationId}-${action}`;
+    setPendingAction(key);
     try {
       if (action === 'approve') await approveApplication(applicationId);
       else await rejectApplication(applicationId);
@@ -253,6 +266,8 @@ export default function ClubDetail() {
       flash(`Application ${action}d.`);
     } catch (err) {
       flash('', getErrorMessage(err));
+    } finally {
+      setPendingAction(null);
     }
   };
 
@@ -327,22 +342,30 @@ export default function ClubDetail() {
 
   const onDeleteEvent = async (event) => {
     if (!window.confirm(`Delete event “${event.title}”?`)) return;
+    const key = `delete-event-${event.id}`;
+    setPendingAction(key);
     try {
       await deleteEvent(event.id);
       flash('Event deleted.');
       await eventsQ.reload();
     } catch (err) {
       flash('', getErrorMessage(err));
+    } finally {
+      setPendingAction(null);
     }
   };
 
   const onRegisterEvent = async (eventId) => {
+    const key = `register-event-${eventId}`;
+    setPendingAction(key);
     flash('', '');
     try {
       await registerForEvent(eventId);
       flash('Registered for event.');
     } catch (err) {
       flash('', getErrorMessage(err));
+    } finally {
+      setPendingAction(null);
     }
   };
 
@@ -362,23 +385,31 @@ export default function ClubDetail() {
   };
 
   const onChangeRole = async (memberUserId, role) => {
+    const key = `role-${memberUserId}`;
+    setPendingAction(key);
     try {
       await updateMemberRole(clubId, memberUserId, role);
       await membersQ.reload();
       flash('Member role updated.');
     } catch (err) {
       flash('', getErrorMessage(err));
+    } finally {
+      setPendingAction(null);
     }
   };
 
   const onRemoveMember = async (memberUserId, label) => {
     if (!window.confirm(`Remove ${label || 'this member'}?`)) return;
+    const key = `remove-${memberUserId}`;
+    setPendingAction(key);
     try {
       await removeMember(clubId, memberUserId);
       await membersQ.reload();
       flash('Member removed.');
     } catch (err) {
       flash('', getErrorMessage(err));
+    } finally {
+      setPendingAction(null);
     }
   };
 
@@ -539,7 +570,11 @@ export default function ClubDetail() {
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {drive.status === 'OPEN' && (
-                    <Button size="sm" onClick={() => onApply(drive.id)}>
+                    <Button
+                      size="sm"
+                      loading={isPending(`apply-${drive.id}`)}
+                      onClick={() => onApply(drive.id)}
+                    >
                       Apply
                     </Button>
                   )}
@@ -562,6 +597,7 @@ export default function ClubDetail() {
                       <Button
                         size="sm"
                         variant="danger"
+                        loading={isPending(`delete-recruit-${drive.id}`)}
                         onClick={() => onDeleteRecruitment(drive)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -622,7 +658,11 @@ export default function ClubDetail() {
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {event.status === 'PUBLISHED' ? (
-                    <Button size="sm" onClick={() => onRegisterEvent(event.id)}>
+                    <Button
+                      size="sm"
+                      loading={isPending(`register-event-${event.id}`)}
+                      onClick={() => onRegisterEvent(event.id)}
+                    >
                       Register
                     </Button>
                   ) : (
@@ -647,6 +687,7 @@ export default function ClubDetail() {
                       <Button
                         size="sm"
                         variant="danger"
+                        loading={isPending(`delete-event-${event.id}`)}
                         onClick={() => onDeleteEvent(event)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -836,6 +877,7 @@ export default function ClubDetail() {
                     <div className="flex gap-2">
                       <Button
                         size="sm"
+                        loading={isPending(`review-${app.id}-approve`)}
                         onClick={() => reviewApp(app.id, 'approve')}
                       >
                         Approve
@@ -843,6 +885,7 @@ export default function ClubDetail() {
                       <Button
                         size="sm"
                         variant="danger"
+                        loading={isPending(`review-${app.id}-reject`)}
                         onClick={() => reviewApp(app.id, 'reject')}
                       >
                         Reject
