@@ -1,6 +1,9 @@
 from pathlib import Path
+import logging
+import os
 import shutil
 import subprocess
+import uuid
 from datetime import date, datetime
 
 from sqlalchemy import select
@@ -12,6 +15,8 @@ from app.services.latex_render import render_resume
 from app.utils.pdf_engine import ensure_pdf_engine, resolve_pdf_engine
 from uuid import UUID
 from fastapi import HTTPException, status
+
+logger = logging.getLogger(__name__)
 
 
 def _sortable_date(value):
@@ -159,25 +164,22 @@ class PDFService:
     def compile_pdf(
         self,
         latex_content: str,
-        resume_id: int,
+        resume_id: UUID,
     ) -> Path:
 
-        # Create a permanent debug folder
-        temp_dir = self.TEMP_DIR / "debug"
+        temp_dir = self.TEMP_DIR / f"build_{uuid.uuid4().hex}"
         temp_dir.mkdir(parents=True, exist_ok=True)
 
         tex_file = temp_dir / "resume.tex"
         pdf_file = temp_dir / "resume.pdf"
 
-        # Save rendered LaTeX
         tex_file.write_text(
             latex_content,
             encoding="utf-8",
         )
 
-        print(f"Saved TEX: {tex_file}")
+        logger.info("Saved TEX: %s", tex_file)
 
-        # Copy logo if it exists
         logo_source = (
             self.BASE_DIR
             / "templates"
@@ -207,10 +209,16 @@ class PDFService:
                 detail="PDF generation timed out. Please try again.",
             ) from exc
 
-        if result.returncode != 0:
+        log_file = temp_dir / "resume.log"
+        if log_file.exists():
+            logger.error("Tectonic log:\n%s", log_file.read_text(encoding="utf-8")[-4000:])
+
+        if result.returncode != 0 or not pdf_file.exists():
+            detail = self._compile_error_message(result)
+            logger.error("PDF compile failed: %s", detail)
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="PDF generation failed. Check resume content and try again.",
+                detail=detail,
             )
 
         output_pdf = self.OUTPUT_DIR / f"resume_{resume_id}.pdf"
@@ -219,6 +227,8 @@ class PDFService:
             pdf_file,
             output_pdf,
         )
+
+        shutil.rmtree(temp_dir, ignore_errors=True)
 
         return output_pdf
             
@@ -251,18 +261,25 @@ class PDFService:
         return pdf_path
 
     def _compile_tex(self, temp_dir: Path, tex_file: Path):
+        env = os.environ.copy()
+        env.setdefault("TECTONIC_CACHE_DIR", "/tmp/tectonic-cache")
+        Path(env["TECTONIC_CACHE_DIR"]).mkdir(parents=True, exist_ok=True)
+
         tectonic = resolve_pdf_engine()
         if tectonic and "tectonic" in Path(tectonic).name.lower():
             return subprocess.run(
                 [
                     tectonic,
                     "--synctex=0",
+                    "--keep-logs",
+                    "--print",
                     tex_file.name,
                 ],
                 cwd=temp_dir,
                 capture_output=True,
                 text=True,
-                timeout=180,
+                timeout=300,
+                env=env,
             )
 
         pdflatex = shutil.which("pdflatex")
@@ -277,6 +294,22 @@ class PDFService:
                 capture_output=True,
                 text=True,
                 timeout=120,
+                env=env,
             )
 
         raise FileNotFoundError("No PDF engine found")
+
+    def _compile_error_message(self, result: subprocess.CompletedProcess) -> str:
+        output = "\n".join(
+            part.strip()
+            for part in (result.stdout or "", result.stderr or "")
+            if part and part.strip()
+        )
+        if not output:
+            return "PDF generation failed. Check resume content and try again."
+
+        lines = [line for line in output.splitlines() if line.strip()]
+        tail = "\n".join(lines[-8:])
+        if len(tail) > 500:
+            tail = tail[-500:]
+        return f"PDF generation failed: {tail}"

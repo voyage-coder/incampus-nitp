@@ -15,9 +15,7 @@
 \usepackage{fancyhdr}
 \usepackage{multicol}
 \usepackage{graphicx}
-\usepackage{cfr-lm}
 \usepackage[T1]{fontenc}
-\usepackage{fontawesome5}
 \usepackage[hidelinks]{hyperref}
 \usepackage{microtype}
 \usepackage{array}
@@ -123,10 +121,10 @@
 \parbox{\dimexpr\linewidth-2.8cm\relax}{
 \begin{tabularx}{\linewidth}{L r}
   \textbf{\LARGE (( user.full_name|latex_escape ))} & (% if user.phone %)+91-(( user.phone|latex_escape ))(% endif %) \\
-  (% if resume.headline %)(( resume.headline|latex_escape ))(% else %)Bachelor of Technology(% endif %) & \href{mailto:(( user.email ))}{(( user.email|latex_escape ))} \\
-  (% if header_department %)(( header_department|latex_escape ))(% endif %) & (% if user.linkedin %)\href{(( user.linkedin|linkedin_url ))}{linkedin.com/in/(( user.linkedin|social_handle('linkedin')|latex_escape ))}(% endif %) \\
+  (% if resume.headline %)(( resume.headline|latex_escape ))(% else %)Bachelor of Technology(% endif %) & \href{mailto:(( user.email|latex_href_url ))}{(( user.email|latex_escape ))} \\
+  (% if header_department %)(( header_department|latex_escape ))(% endif %) & (% if user.linkedin %)\href{(( user.linkedin|linkedin_url|latex_href_url ))}{linkedin.com/in/(( user.linkedin|social_handle('linkedin')|latex_escape ))}(% endif %) \\
   National Institute of Technology, Patna
-  & (% if user.github %)\href{(( user.github|github_url ))}{github.com/(( user.github|social_handle('github')|latex_escape ))}(% endif %) \\
+  & (% if user.github %)\href{(( user.github|github_url|latex_href_url ))}{github.com/(( user.github|social_handle('github')|latex_escape ))}(% endif %) \\
 \end{tabularx}
 }
 \vspace{-2mm}
@@ -174,7 +172,7 @@
     {(( project.title|latex_escape ))}
     {Tools: (( project.technologies|latex_escape ))}
     {(( project.start_date|format_date_range(project.end_date) ))}
-    {{}(% if project.github_url %)[\href{(( project.github_url ))}{\textcolor{darkblue}{\faGithub}}](% endif %)(% if project.live_url %)(% if project.github_url %)\hspace{2mm}(% endif %)[\href{(( project.live_url ))}{\textcolor{darkblue}{Live}}](% endif %)}
+    {{}(% if project.github_url %)[\href{(( project.github_url|latex_href_url ))}{\textcolor{darkblue}{GitHub}}](% endif %)(% if project.live_url %)(% if project.github_url %)\hspace{2mm}(% endif %)[\href{(( project.live_url|latex_href_url ))}{\textcolor{darkblue}{Live}}](% endif %)}
 \resumeItemListStart
     (% for bullet in project.description %)
     \item (( bullet|latex_escape ))
@@ -203,7 +201,7 @@
 (% for cert in certifications %)
 \resumePOR
     {(( cert.issuer|latex_escape ))}
-    {(% if cert.credential_url %), \href{(( cert.credential_url ))}{(( cert.name|latex_escape ))}(% else %), (( cert.name|latex_escape ))(% endif %)}
+    {(% if cert.credential_url %), \href{(( cert.credential_url|latex_href_url ))}{(( cert.name|latex_escape ))}(% else %), (( cert.name|latex_escape ))(% endif %)}
     {(( cert.issue_date|format_month_year ))}
 (% endfor %)
 \resumeSubHeadingListEnd
@@ -215,7 +213,7 @@
 \vspace{-0.2mm}
 \resumeSubHeadingListStart
 (% for achievement in achievements %)
-\resumePOR{}{(% if achievement.achievement_url %)\href{(( achievement.achievement_url ))}{ (( achievement.title|latex_escape )) }(% else %)(( achievement.title|latex_escape ))(% endif %)}{}
+\resumePOR{}{(% if achievement.achievement_url %)\href{(( achievement.achievement_url|latex_href_url ))}{ (( achievement.title|latex_escape )) }(% else %)(( achievement.title|latex_escape ))(% endif %)}{}
 (% endfor %)
 \resumeSubHeadingListEnd
 \vspace{-6mm}
@@ -226,7 +224,7 @@
 \vspace{-0.4mm}
 \resumeSubHeadingListStart
 (% for position in positions_of_responsibility %)
-    \resumePOR{(% if position.url %)\href{(( position.url ))}{(( position.position|latex_escape ))}, (% else %)(( position.position|latex_escape )), (% endif %)}
+    \resumePOR{(% if position.url %)\href{(( position.url|latex_href_url ))}{(( position.position|latex_escape ))}, (% else %)(( position.position|latex_escape )), (% endif %)}
     {(( position.organization|latex_escape ))}
     {(( position.start_date|format_month_year ))}
 

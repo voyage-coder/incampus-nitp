@@ -94,6 +94,16 @@ def github_url(value) -> str:
     return f"https://github.com/{handle}"
 
 
+def latex_href_url(value) -> str:
+    """Escape characters that break hyperref \\href targets."""
+    if not value:
+        return ""
+    text = str(value).strip().replace("\\", "/")
+    for char in ("%", "#", "_"):
+        text = text.replace(char, f"\\{char}")
+    return text
+
+
 BASE_DIR = Path(__file__).resolve().parents[2]
 TEMPLATE_DIR = BASE_DIR / "templates" / "resume"
 
@@ -115,6 +125,7 @@ env.filters["display_value"] = display_value
 env.filters["social_handle"] = social_handle
 env.filters["linkedin_url"] = linkedin_url
 env.filters["github_url"] = github_url
+env.filters["latex_href_url"] = latex_href_url
 
 
 def render_resume(data: dict) -> str:

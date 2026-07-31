@@ -108,6 +108,11 @@ def ensure_pdf_engine() -> str | None:
         bin_path.chmod(0o755)
         global _installed_engine
         _installed_engine = str(bin_path)
+
+        cache_dir = Path("/tmp/tectonic-cache")
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        os.environ.setdefault("TECTONIC_CACHE_DIR", str(cache_dir))
+
         logger.info("Tectonic installed at %s", bin_path)
         return _installed_engine
     except Exception:
