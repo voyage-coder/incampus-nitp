@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -29,10 +31,19 @@ from app.api import (
 )
 from app.notifications.router import router as notifications_router
 from app.core.config import CORS_ORIGINS, CORS_ORIGIN_REGEX
+from app.utils.pdf_engine import ensure_pdf_engine
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    ensure_pdf_engine()
+    yield
+
 
 app = FastAPI(
     title="InCampus NITP API",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(

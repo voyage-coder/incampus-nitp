@@ -9,7 +9,7 @@ from sqlalchemy.orm import joinedload
 
 from app.models.resume import Resume
 from app.services.latex_render import render_resume
-from app.utils.pdf_engine import resolve_pdf_engine
+from app.utils.pdf_engine import ensure_pdf_engine, resolve_pdf_engine
 from uuid import UUID
 from fastapi import HTTPException, status
 
@@ -233,6 +233,8 @@ class PDFService:
             resume_id=resume_id,
             user_id=user_id,
         )
+
+        ensure_pdf_engine()
 
         context = self.build_context(resume)
 

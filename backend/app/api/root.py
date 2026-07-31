@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from pathlib import Path
 
 from app.utils.pdf_engine import get_pdf_engine_name, resolve_pdf_engine
 
@@ -19,4 +20,5 @@ def health():
         "pdf_engine": pdf_engine,
         "pdf_ready": pdf_engine is not None,
         "pdf_path": resolve_pdf_engine(),
+        "base_dir": str(Path(__file__).resolve().parents[2]),
     }
