@@ -28,7 +28,7 @@ from app.api import (
     resume_pdf,
 )
 from app.notifications.router import router as notifications_router
-from app.core.config import CORS_ORIGINS
+from app.core.config import CORS_ORIGINS, CORS_ORIGIN_REGEX
 
 app = FastAPI(
     title="InCampus NITP API",
@@ -38,6 +38,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
+    allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
