@@ -4,7 +4,7 @@ from sqlalchemy import select
 # SELECT * FROM users; becomes select(User)
 # select(User).where(User.email == "abc@gmail.com")
 from app.models.user import User
-from app.core.security import hash_password, verify_password
+from app.core.security import hash_password, password_needs_rehash, verify_password
 from app.schemas.user import UserCreate
 from app.enums.role import UserRole
 from uuid import UUID
@@ -80,6 +80,14 @@ def authenticate_user(
 
     if not verify_password(password, user.password_hash):
         return None
+
+    if password_needs_rehash(user.password_hash):
+        user.password_hash = hash_password(password)
+        try:
+            db.commit()
+            db.refresh(user)
+        except SQLAlchemyError:
+            db.rollback()
 
     return user
 
