@@ -7,9 +7,7 @@ import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import ContactModal from '../../components/ui/ContactModal';
-import ImageUploadField, {
-  imagePreviewFromStored,
-} from '../../components/ui/ImageUploadField';
+import ImageUploadField from '../../components/ui/ImageUploadField';
 import Input from '../../components/ui/Input';
 import Textarea from '../../components/ui/Textarea';
 import Select from '../../components/ui/Select';
@@ -28,7 +26,7 @@ import {
   uploadLostFoundImage,
 } from '../../services/lostFoundService';
 import { getErrorMessage, labelize, timeAgo } from '../../utils/format';
-import { resolveUploadUrl } from '../../utils/media';
+import { resolveUploadUrl, uploadPathForStorage } from '../../utils/media';
 import { cn } from '../../utils/cn';
 
 export default function LostFound() {
@@ -100,8 +98,8 @@ export default function LostFound() {
       location: item.location || '',
     });
     setImageFile(null);
-    setStoredImage(item.image_url || null);
-    setImagePreview(item.image_url ? imagePreviewFromStored(item.image_url) : null);
+    setStoredImage(uploadPathForStorage(item.image_url));
+    setImagePreview(item.image_url ? resolveUploadUrl(item.image_url) : null);
     setFormError('');
     setOpen(true);
   };
@@ -114,7 +112,7 @@ export default function LostFound() {
     setSaving(true);
     setFormError('');
     try {
-      let imageUrl = storedImage;
+      let imageUrl = uploadPathForStorage(storedImage);
       if (imageFile) {
         const uploaded = await uploadLostFoundImage(imageFile);
         imageUrl = uploaded.filename;

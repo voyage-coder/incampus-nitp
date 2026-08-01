@@ -39,9 +39,7 @@ export async function updateProfile(payload) {
 export async function uploadProfileImage(file) {
   const form = new FormData();
   form.append('file', file);
-  const { data } = await api.put('/users/me/profile-image', form, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  const { data } = await api.put('/users/me/profile-image', form);
   return data;
 }
 

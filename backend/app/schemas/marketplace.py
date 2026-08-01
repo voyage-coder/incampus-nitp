@@ -2,10 +2,11 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
 from app.enums.item_category import ItemCategory
 from app.enums.item_status import ItemStatus
+from app.utils.media import public_upload_url
 
 
 class MarketplaceItemCreate(BaseModel):
@@ -40,3 +41,7 @@ class MarketplaceItemResponse(BaseModel):
 
     created_at: datetime
     updated_at: datetime
+
+    @field_serializer("image_url")
+    def serialize_image_url(self, value: str | None) -> str | None:
+        return public_upload_url(value)

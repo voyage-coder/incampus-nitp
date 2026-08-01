@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_serializer
 # every pydantic schema inherits from BaseModel jst like Bse in SQLA
 # Instead of email:str we use email: EmailStr -> pydantic automatically validates email format - if wrong like abc@@ then fastapi automatically returns error 422 unprocessable entity
 # Field used for validation like password length should be 8 etc
@@ -6,6 +6,7 @@ from uuid import UUID
 from pydantic import ConfigDict
 from app.enums.role import UserRole
 from typing import Optional
+from app.utils.media import public_upload_url
 
 class UserCreate(BaseModel):
     full_name : str = Field(min_length=3, max_length=100)
@@ -81,6 +82,10 @@ class UserProfileResponse(BaseModel):
     has_password: bool = False
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer("profile_image")
+    def serialize_profile_image(self, value: str | None) -> str | None:
+        return public_upload_url(value)
 
 # updating profile
 class UserUpdate(BaseModel):

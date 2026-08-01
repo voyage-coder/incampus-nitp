@@ -2,10 +2,11 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
 from app.enums.lost_found_status import LostFoundStatus
 from app.enums.lost_found_type import LostFoundType
+from app.utils.media import public_upload_url
 
 
 class LostFoundItemCreate(BaseModel):
@@ -40,3 +41,7 @@ class LostFoundItemResponse(BaseModel):
 
     created_at: datetime
     updated_at: datetime
+
+    @field_serializer("image_url")
+    def serialize_image_url(self, value: str | None) -> str | None:
+        return public_upload_url(value)

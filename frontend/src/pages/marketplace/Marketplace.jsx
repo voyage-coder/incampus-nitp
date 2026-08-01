@@ -18,9 +18,7 @@ import { CATEGORY_COLORS } from '../../constants/colors';
 import { useFetch } from '../../hooks/useFetch';
 import { useAuth } from '../../context/AuthContext';
 import { useWishlist } from '../../features/marketplace/useWishlist';
-import ImageUploadField, {
-  imagePreviewFromStored,
-} from '../../components/ui/ImageUploadField';
+import ImageUploadField from '../../components/ui/ImageUploadField';
 import {
   createMarketplaceItem,
   deleteMarketplaceItem,
@@ -32,7 +30,7 @@ import {
   uploadMarketplaceImage,
 } from '../../services/marketplaceService';
 import { formatPrice, getErrorMessage, labelize } from '../../utils/format';
-import { resolveUploadUrl } from '../../utils/media';
+import { resolveUploadUrl, uploadPathForStorage } from '../../utils/media';
 import { cn } from '../../utils/cn';
 
 export default function Marketplace() {
@@ -154,8 +152,8 @@ export default function Marketplace() {
       price: String(item.price ?? ''),
     });
     setImageFile(null);
-    setStoredImage(item.image_url || null);
-    setImagePreview(item.image_url ? imagePreviewFromStored(item.image_url) : null);
+    setStoredImage(uploadPathForStorage(item.image_url));
+    setImagePreview(item.image_url ? resolveUploadUrl(item.image_url) : null);
     setFormError('');
     setOpen(true);
   };
@@ -165,7 +163,7 @@ export default function Marketplace() {
     setSaving(true);
     setFormError('');
     try {
-      let imageUrl = storedImage;
+      let imageUrl = uploadPathForStorage(storedImage);
       if (imageFile) {
         const uploaded = await uploadMarketplaceImage(imageFile);
         imageUrl = uploaded.filename;
@@ -330,6 +328,7 @@ export default function Marketplace() {
                       src={photo}
                       alt={item.title}
                       className="absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
                     />
                   )}
                   <Badge

@@ -19,8 +19,6 @@ export const deleteMarketplaceItem = async (id) =>
 export const uploadMarketplaceImage = async (file) => {
   const form = new FormData();
   form.append('file', file);
-  const { data } = await api.post('/marketplace/upload-image', form, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  const { data } = await api.post('/marketplace/upload-image', form);
   return data;
 };

@@ -25,7 +25,7 @@ import {
 import { getErrorMessage, normalizeUrl } from '../../utils/format';
 
 export default function Profile() {
-  const { user, refreshUser, loading: authLoading } = useAuth();
+  const { user, refreshUser, setUser, loading: authLoading } = useAuth();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -121,8 +121,8 @@ export default function Profile() {
     setUploading(true);
     setError('');
     try {
-      await uploadProfileImage(file);
-      await refreshUser();
+      const updated = await uploadProfileImage(file);
+      setUser(updated);
       setMessage('Photo updated.');
     } catch (err) {
       setError(getErrorMessage(err));
@@ -176,6 +176,7 @@ export default function Profile() {
         <Card hover={false} className="text-center">
           <div className="mx-auto w-fit">
             <Avatar
+              key={user.profile_image || 'default'}
               name={user.full_name}
               src={user.profile_image}
               size="xl"

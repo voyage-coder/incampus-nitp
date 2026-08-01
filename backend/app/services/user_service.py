@@ -96,14 +96,12 @@ def upload_profile_image(
     file: UploadFile,
 ):
     if current_user.profile_image:
-        old_image_path = os.path.join(UPLOAD_DIR, current_user.profile_image)
+        old_image = current_user.profile_image.strip()
+        if old_image and not old_image.startswith(("http://", "https://")):
+            old_image_path = os.path.join(UPLOAD_DIR, old_image)
+            if os.path.exists(old_image_path):
+                os.remove(old_image_path)
 
-        if os.path.exists(old_image_path):
-            os.remove(old_image_path)
-
-    # file_path = save_profile_image(file)
-
-    # current_user.profile_image = file_path
     filename = save_profile_image(file)
     current_user.profile_image = filename
     # now the db store the returned path instead of actual image

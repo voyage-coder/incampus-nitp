@@ -6,6 +6,8 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 SECRET_KEY = os.getenv("SECRET_KEY")
+# Public URL of this API (used for absolute upload links in JSON responses)
+PUBLIC_API_URL = os.getenv("PUBLIC_API_URL", "").strip().rstrip("/")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
