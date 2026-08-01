@@ -19,9 +19,9 @@ class UserResponse(BaseModel):
     id: UUID
     full_name: str
     email: str
-    roll_number: str
+    roll_number: Optional[str] = None
     branch: str
-    year: int
+    year: Optional[int] = None
     model_config = ConfigDict(from_attributes=True)
     role: UserRole
 # here password is missing - no hased password

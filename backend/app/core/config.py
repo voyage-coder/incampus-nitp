@@ -21,7 +21,8 @@ CORS_ORIGINS = [
 ]
 
 # Optional regex for Vercel preview/production URLs (e.g. *.vercel.app)
-CORS_ORIGIN_REGEX = os.getenv("CORS_ORIGIN_REGEX", r"https://.*\.vercel\.app")
+_cors_regex = os.getenv("CORS_ORIGIN_REGEX", r"https://.*\.vercel\.app").strip()
+CORS_ORIGIN_REGEX = _cors_regex or None
 
 # Google OAuth (Sign in with Google)
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
