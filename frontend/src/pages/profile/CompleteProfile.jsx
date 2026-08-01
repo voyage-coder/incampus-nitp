@@ -22,7 +22,11 @@ export default function CompleteProfile() {
     roll_number: '',
     branch: 'CSE',
     year: 1,
+    password: '',
+    confirmPassword: '',
   });
+
+  const needsPassword = user && !user.has_password;
 
   useEffect(() => {
     if (user && !needsProfileSetup(user)) {
@@ -30,26 +34,44 @@ export default function CompleteProfile() {
       return;
     }
     if (user) {
-      setForm({
+      setForm((prev) => ({
+        ...prev,
         full_name: user.full_name || '',
         roll_number: user.roll_number?.startsWith('G-') ? '' : user.roll_number || '',
         branch: user.branch === 'TBD' ? 'CSE' : user.branch || 'CSE',
         year: user.year || 1,
-      });
+      }));
     }
   }, [user, navigate]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
     setError('');
+
+    if (needsPassword) {
+      if (form.password.length < 8) {
+        setError('Password must be at least 8 characters.');
+        return;
+      }
+      if (form.password !== form.confirmPassword) {
+        setError('Passwords do not match.');
+        return;
+      }
+    }
+
+    setSaving(true);
     try {
-      await updateProfile({
+      const payload = {
         full_name: form.full_name.trim(),
         roll_number: form.roll_number.trim().toUpperCase(),
         branch: form.branch,
         year: Number(form.year),
-      });
+      };
+      if (needsPassword) {
+        payload.password = form.password;
+      }
+
+      await updateProfile(payload);
       await refreshUser();
       navigate('/app/dashboard', { replace: true });
     } catch (err) {
@@ -66,53 +88,82 @@ export default function CompleteProfile() {
       <PageHeader
         eyebrow="One more step"
         title="Complete your profile"
-        description="Google sign-in created your account. Add your campus details so classmates and features work correctly."
+        description="Google created your account. Add campus details and a password so you can sign in with email too."
       />
 
       <LoadingOverlay show={saving} label="Saving your profile…">
-      <Card hover={false} className="mt-6">
-        <p className="mb-4 text-sm text-muted">
-          Signed in as <span className="font-medium text-ink">{user.email}</span>
-        </p>
+        <Card hover={false} className="mt-6">
+          <p className="mb-4 text-sm text-muted">
+            Signed in as <span className="font-medium text-ink">{user.email}</span>
+          </p>
 
-        <form onSubmit={onSubmit} className="grid gap-4">
-          <Input
-            label="Full name"
-            value={form.full_name}
-            onChange={(e) => setForm({ ...form, full_name: e.target.value })}
-            required
-          />
-          <Input
-            label="Roll number"
-            value={form.roll_number}
-            onChange={(e) => setForm({ ...form, roll_number: e.target.value })}
-            placeholder="e.g. 2201CS001"
-            required
-          />
-          <Select
-            label="Branch"
-            value={form.branch}
-            onChange={(e) => setForm({ ...form, branch: e.target.value })}
-            options={BRANCHES}
-          />
-          <Select
-            label="Year"
-            value={form.year}
-            onChange={(e) => setForm({ ...form, year: Number(e.target.value) })}
-            options={YEARS.map((y) => ({ value: y, label: `Year ${y}` }))}
-          />
+          <form onSubmit={onSubmit} className="grid gap-4">
+            <Input
+              label="Full name"
+              value={form.full_name}
+              onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+              required
+            />
+            <Input
+              label="Roll number"
+              value={form.roll_number}
+              onChange={(e) => setForm({ ...form, roll_number: e.target.value })}
+              placeholder="e.g. 2201CS001"
+              required
+            />
+            <Select
+              label="Branch"
+              value={form.branch}
+              onChange={(e) => setForm({ ...form, branch: e.target.value })}
+              options={BRANCHES}
+            />
+            <Select
+              label="Year"
+              value={form.year}
+              onChange={(e) => setForm({ ...form, year: Number(e.target.value) })}
+              options={YEARS.map((y) => ({ value: y, label: `Year ${y}` }))}
+            />
 
-          {error && (
-            <div className="rounded-2xl bg-primary-soft px-4 py-3 text-sm text-primary">
-              {error}
-            </div>
-          )}
+            {needsPassword && (
+              <>
+                <div className="rounded-2xl bg-cream px-4 py-3 text-sm text-muted">
+                  Create a password for this email. You can still use Google sign-in,
+                  or sign in with email and password later.
+                </div>
+                <Input
+                  label="Create password"
+                  type="password"
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  minLength={8}
+                  autoComplete="new-password"
+                  required
+                />
+                <Input
+                  label="Confirm password"
+                  type="password"
+                  value={form.confirmPassword}
+                  onChange={(e) =>
+                    setForm({ ...form, confirmPassword: e.target.value })
+                  }
+                  minLength={8}
+                  autoComplete="new-password"
+                  required
+                />
+              </>
+            )}
 
-          <Button type="submit" className="w-full" loading={saving}>
-            Continue to dashboard
-          </Button>
-        </form>
-      </Card>
+            {error && (
+              <div className="rounded-2xl bg-primary-soft px-4 py-3 text-sm text-primary">
+                {error}
+              </div>
+            )}
+
+            <Button type="submit" className="w-full" loading={saving}>
+              Continue to dashboard
+            </Button>
+          </form>
+        </Card>
       </LoadingOverlay>
     </div>
   );

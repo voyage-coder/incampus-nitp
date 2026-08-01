@@ -29,6 +29,8 @@ export default function Profile() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ password: '', confirmPassword: '' });
+  const [settingPassword, setSettingPassword] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [form, setForm] = useState({
@@ -85,6 +87,31 @@ export default function Profile() {
       setError(getErrorMessage(err));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const onSetPassword = async (e) => {
+    e.preventDefault();
+    if (passwordForm.password.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+    if (passwordForm.password !== passwordForm.confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    setSettingPassword(true);
+    setError('');
+    setMessage('');
+    try {
+      await updateProfile({ password: passwordForm.password });
+      await refreshUser();
+      setPasswordForm({ password: '', confirmPassword: '' });
+      setMessage('Password set. You can now sign in with email and password.');
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setSettingPassword(false);
     }
   };
 
@@ -188,6 +215,45 @@ export default function Profile() {
         </Card>
 
         <div className="space-y-4">
+          {!user.has_password && (
+            <Card hover={false}>
+              <h3 className="font-display text-lg font-bold">Set a password</h3>
+              <p className="mt-2 text-sm text-muted">
+                Your account uses Google sign-in. Add a password to also sign in with
+                email and password.
+              </p>
+              <form onSubmit={onSetPassword} className="mt-4 grid gap-3">
+                <Input
+                  label="New password"
+                  type="password"
+                  value={passwordForm.password}
+                  onChange={(e) =>
+                    setPasswordForm({ ...passwordForm, password: e.target.value })
+                  }
+                  minLength={8}
+                  autoComplete="new-password"
+                  required
+                />
+                <Input
+                  label="Confirm password"
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={(e) =>
+                    setPasswordForm({
+                      ...passwordForm,
+                      confirmPassword: e.target.value,
+                    })
+                  }
+                  minLength={8}
+                  autoComplete="new-password"
+                  required
+                />
+                <Button type="submit" loading={settingPassword}>
+                  Save password
+                </Button>
+              </form>
+            </Card>
+          )}
           {editing ? (
             <Card hover={false}>
               <form onSubmit={onSave} className="grid gap-4 sm:grid-cols-2">

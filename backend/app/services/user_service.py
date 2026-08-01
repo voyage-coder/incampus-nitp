@@ -5,6 +5,7 @@ from fastapi import HTTPException, status
 from app.models.user import User
 from app.schemas.user import UserProfileResponse, UserUpdate
 from fastapi import UploadFile
+from app.core.security import hash_password
 from app.utils.file_upload import save_profile_image
 from app.utils.url import normalize_profile_url
 UPLOAD_DIR = "uploads"
@@ -35,6 +36,7 @@ def serialize_user_profile(user: User) -> UserProfileResponse:
         is_active=bool(user.is_active),
         is_verified=bool(user.is_verified),
         profile_complete=is_profile_complete(user),
+        has_password=bool(user.password_hash),
     )
 
 def get_user_profile(current_user: User) -> UserProfileResponse:
@@ -65,6 +67,16 @@ def update_user_profile(
     for field in ("github", "linkedin", "portfolio"):
         if field in update_data:
             update_data[field] = normalize_profile_url(update_data[field])
+
+    if "password" in update_data:
+        new_password = update_data.pop("password")
+        if new_password:
+            if current_user.password_hash:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Password is already set.",
+                )
+            current_user.password_hash = hash_password(new_password)
 
     for field, value in update_data.items():
         setattr(current_user, field, value)

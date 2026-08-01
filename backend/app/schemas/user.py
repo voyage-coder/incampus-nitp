@@ -78,6 +78,7 @@ class UserProfileResponse(BaseModel):
     is_active: bool = True
     is_verified: bool = False
     profile_complete: bool = True
+    has_password: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -105,3 +106,8 @@ class UserUpdate(BaseModel):
     linkedin: Optional[str] = None
     portfolio: Optional[str] = None
     profile_image: Optional[str] = None
+    password: Optional[str] = Field(
+        default=None,
+        min_length=8,
+        max_length=128,
+    )
